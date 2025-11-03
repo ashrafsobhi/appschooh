@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}رابط تسجيل الدخول المشفر{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin-top: 2rem;">
+    <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 1.5rem;">
+            <h5 class="mb-0"><i class="fas fa-link"></i> رابط تسجيل الدخول المشفر</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> تم إنشاء رابط تسجيل دخول مشفر للمستخدم: <strong>{{ user.username }}</strong>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label fw-bold">الرابط المشفر:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="loginLink" value="{{ login_url }}" readonly>
+                    <button class="btn btn-primary" onclick="copyLink()">
+                        <i class="fas fa-copy"></i> نسخ
+                    </button>
+                </div>
+                <small class="text-muted">هذا الرابط صالح لمدة 7 أيام</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label fw-bold">Token (JWT):</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="token" value="{{ token }}" readonly style="font-family: monospace; font-size: 0.85rem;">
+                    <button class="btn btn-outline-secondary" onclick="copyToken()">
+                        <i class="fas fa-copy"></i> نسخ
+                    </button>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <a href="{{ login_url }}" class="btn btn-success" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> فتح الرابط
+                </a>
+                <a href="{% url 'student_affairs:admin_create_user' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyLink() {
+    const link = document.getElementById('loginLink');
+    link.select();
+    document.execCommand('copy');
+    alert('تم نسخ الرابط!');
+}
+
+function copyToken() {
+    const token = document.getElementById('token');
+    token.select();
+    document.execCommand('copy');
+    alert('تم نسخ Token!');
+}
+</script>
+{% endblock %}
+

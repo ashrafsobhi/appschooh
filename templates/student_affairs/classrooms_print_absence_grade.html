@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>طباعة قوائم الغياب - {{ grade_label }} - {{ gender_label }}</title>
+    <style>
+        @page { size: A4 landscape; margin: 10mm; }
+        body { font-family: 'Tahoma', sans-serif; }
+        .page { page-break-after: always; position: relative; }
+        .page-inner { display: flex; flex-direction: row; column-gap: 10mm; align-items: flex-start; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; }
+        .title { text-align: center; font-weight: bold; font-size: 14px; }
+        .green-bar { display: grid; grid-template-columns: 2fr 1fr; background: #2e7d32; color: #fff; border: 1px solid #1b5e20; margin: 6px 0; }
+        .green-bar div { padding: 6px 10px; font-weight: 700; font-size: 16px; text-align: center; }
+        .half { flex: 1 1 0; min-width: 0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 4px; text-align: center; font-size: 11px; }
+        thead th { background: #f0f0f0; font-weight: bold; }
+        .footer-fixed { position: fixed; left: 10mm; right: 10mm; bottom: 6mm; display: flex; justify-content: space-between; font-weight: 700; font-size: 12px; }
+        .muted { color: #333; }
+        .small { font-size: 11px; }
+        .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .row .box { border: 1px solid #000; padding: 2px 6px; min-width: 120px; }
+    </style>
+</head>
+<body>
+{% for item in classes_data %}
+    {% with cls=item.classroom students=item.students grade_number=item.grade_number %}
+    <div class="page">
+        <div class="page-inner">
+        <div class="half">
+            <div class="header">
+                <div class="small">إدارة: {{ site.administration }}</div>
+                <div class="title">مدرسة {{ site.school_name }} | {{ grade_label }} ({{ gender_label }}) | العام الدراسي: {{ academic_span }}</div>
+                <div></div>
+            </div>
+            <div class="row muted small" style="margin-bottom:6px;">
+                <div class="box">اليوم: ________</div>
+                <div class="box">التاريخ: ________</div>
+            </div>
+            <div class="green-bar">
+                <div>فصل {{ grade_number }}/{{ cls.class_number }}</div>
+                <div>الحصص</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الطالب</th>
+                        <th>الفصل</th>
+                        <th>الحالة</th>
+                        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for s in students %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td style="text-align:right">{{ s.name }}</td>
+                        <td>{{ cls.class_number }}</td>
+                        <td>
+                            {% if gender == 'male' %}
+                                {% if s.transferred_from or s.transferred_to %}مستجد محول{% else %}مستجد{% endif %}
+                            {% else %}
+                                {% if s.transferred_from or s.transferred_to %}مستجدة محولة{% else %}مستجدة{% endif %}
+                            {% endif %}
+                        </td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="12">لا يوجد طلاب</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="half">
+            <div class="header">
+                <div class="small">إدارة: {{ site.administration }}</div>
+                <div class="title">مدرسة {{ site.school_name }} | {{ grade_label }} ({{ gender_label }}) | العام الدراسي: {{ academic_span }}</div>
+                <div></div>
+            </div>
+            <div class="row muted small" style="margin-bottom:6px;">
+                <div class="box">اليوم: ________</div>
+                <div class="box">التاريخ: ________</div>
+            </div>
+            <div class="green-bar">
+                <div>فصل {{ grade_number }}/{{ cls.class_number }}</div>
+                <div>الحصص</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الطالب</th>
+                        <th>الفصل</th>
+                        <th>الحالة</th>
+                        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for s in students %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td style="text-align:right">{{ s.name }}</td>
+                        <td>{{ cls.class_number }}</td>
+                        <td>
+                            {% if gender == 'male' %}
+                                {% if s.transferred_from or s.transferred_to %}مستجد محول{% else %}مستجد{% endif %}
+                            {% else %}
+                                {% if s.transferred_from or s.transferred_to %}مستجدة محولة{% else %}مستجدة{% endif %}
+                            {% endif %}
+                        </td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="12">لا يوجد طلاب</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            
+        </div>
+        </div>
+        <div class="footer-fixed">
+            <div>مدير المدرسة: {{ site.school_manager|default:"________" }}</div>
+            <div>وكيل شؤون الطلبة: {{ site.student_affairs_deputy|default:"________" }}</div>
+        </div>
+    </div>
+    {% endwith %}
+{% endfor %}
+
+<script>
+    window.onload = function() { window.print(); };
+    window.onafterprint = function(){ window.close && window.close(); };
+</script>
+</body>
+</html>
+
+

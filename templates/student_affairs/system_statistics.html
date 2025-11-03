@@ -1,0 +1,919 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}إحصائيات النظام - نظام شؤون الطلبة{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    .page-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    .stats-tabs {
+        border-bottom: 2px solid #e9ecef;
+        margin-bottom: 25px;
+    }
+    .stats-tabs .nav-link {
+        color: #495057;
+        font-weight: 600;
+        padding: 12px 24px;
+        border: none;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+    }
+    .stats-tabs .nav-link:hover {
+        border-bottom-color: #667eea;
+        color: #667eea;
+    }
+    .stats-tabs .nav-link.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+        background: transparent;
+    }
+    .sub-tabs {
+        margin-bottom: 20px;
+    }
+    .sub-tabs .nav-pills .nav-link {
+        color: #6c757d;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 8px;
+        margin-left: 8px;
+    }
+    .sub-tabs .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .stats-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+    }
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    .stats-table th,
+    .stats-table td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #e9ecef;
+    }
+    .stats-table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 700;
+    }
+    .stats-table tbody tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+    .stats-table tbody tr:hover {
+        background: #e9ecef;
+    }
+    .classroom-card {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .classroom-card:hover {
+        background: #e9ecef;
+        transform: translateX(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-top: 20px;
+    }
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="page-header">
+        <h1><i class="fas fa-chart-bar"></i> إحصائيات النظام</h1>
+        <p>عرض شامل لإحصائيات الطلاب والفصول</p>
+    </div>
+
+    <!-- Main Tabs -->
+    <ul class="nav nav-tabs stats-tabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#failed" type="button" role="tab">
+                <i class="fas fa-times-circle"></i> الراسب
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#general-stats" type="button" role="tab">
+                <i class="fas fa-chart-line"></i> الإحصاء
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#christian" type="button" role="tab">
+                <i class="fas fa-cross"></i> الطلاب المسيحيين
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#withdrawn" type="button" role="tab">
+                <i class="fas fa-file-export"></i> السحب
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#stage-stats" type="button" role="tab">
+                <i class="fas fa-layer-group"></i> إحصاء المجموع
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#grade1-total" type="button" role="tab">
+                <i class="fas fa-graduation-cap"></i> إجمالي الصف الأول
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4">
+        <!-- Tab 1: الراسب -->
+        <div class="tab-pane fade show active" id="failed" role="tabpanel">
+            <div class="sub-tabs">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#failed-tables" type="button">جداول</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#failed-charts" type="button">رسوم بيانية</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="failed-tables">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-list"></i> الراسبين حسب الفصل</h5>
+                        {% if failed_by_classroom %}
+                            <div class="row">
+                                {% for cls_id, cls_data in failed_by_classroom.items %}
+                                <div class="col-md-6">
+                                    <div class="classroom-card" onclick="showClassroomDetails({{ cls_data.classroom.id }})">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ cls_data.classroom.display_name }}</strong>
+                                                <br>
+                                                <small class="text-muted">عدد الراسبين: {{ cls_data.count }}</small>
+                                            </div>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">لا يوجد راسبين</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="failed-charts">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-chart-pie"></i> توزيع الراسبين</h5>
+                        <div class="chart-container">
+                            <canvas id="failedChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: الإحصاء -->
+        <div class="tab-pane fade" id="general-stats" role="tabpanel">
+            <div class="sub-tabs">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#general-tables" type="button">جداول</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#general-charts" type="button">رسوم بيانية</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="general-tables">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-table"></i> إحصاء حسب النوع والحالة</h5>
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>النوع</th>
+                                    <th>انتظام مستجد</th>
+                                    <th>انتظام باقي</th>
+                                    <th>دمج</th>
+                                    <th>عمال</th>
+                                    <th>عمال باقي</th>
+                                    <th>الإجمالي</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gender_key, stats in stats_by_gender_status.items %}
+                                <tr>
+                                    <td><strong>{{ stats.label }}</strong></td>
+                                    <td>{{ stats.regular_new }}</td>
+                                    <td>{{ stats.regular_repeat }}</td>
+                                    <td>{{ stats.inclusion }}</td>
+                                    <td>{{ stats.workers_new }}</td>
+                                    <td>{{ stats.workers_repeat }}</td>
+                                    <td><strong>{{ stats.total }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                                <tr style="background: #e9ecef; font-weight: bold;">
+                                    <td>الإجمالي</td>
+                                    <td>{{ stats_by_gender_status.male.regular_new|add:stats_by_gender_status.female.regular_new }}</td>
+                                    <td>{{ stats_by_gender_status.male.regular_repeat|add:stats_by_gender_status.female.regular_repeat }}</td>
+                                    <td>{{ stats_by_gender_status.male.inclusion|add:stats_by_gender_status.female.inclusion }}</td>
+                                    <td>{{ stats_by_gender_status.male.workers_new|add:stats_by_gender_status.female.workers_new }}</td>
+                                    <td>{{ stats_by_gender_status.male.workers_repeat|add:stats_by_gender_status.female.workers_repeat }}</td>
+                                    <td>{{ stats_by_gender_status.male.total|add:stats_by_gender_status.female.total }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-chalkboard"></i> عدد الفصول حسب الصف والنوع</h5>
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>الصف</th>
+                                    <th>بنين</th>
+                                    <th>بنات</th>
+                                    <th>الإجمالي</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for grade_key, cls_data in classrooms_by_grade_gender.items %}
+                                <tr>
+                                    <td><strong>{{ cls_data.label }}</strong></td>
+                                    <td>{{ cls_data.male }}</td>
+                                    <td>{{ cls_data.female }}</td>
+                                    <td><strong>{{ cls_data.total }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="general-charts">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5 class="mb-3"><i class="fas fa-chart-bar"></i> توزيع الحالات</h5>
+                                <div class="chart-container">
+                                    <canvas id="statusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5 class="mb-3"><i class="fas fa-chart-pie"></i> الفصول حسب الصف</h5>
+                                <div class="chart-container">
+                                    <canvas id="classroomsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: الطلاب المسيحيين -->
+        <div class="tab-pane fade" id="christian" role="tabpanel">
+            <div class="sub-tabs">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#christian-tables" type="button">جداول</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#christian-charts" type="button">رسوم بيانية</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="christian-tables">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-cross"></i> إحصاء الطلاب المسيحيين</h5>
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>النوع</th>
+                                    <th>العدد</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>بنين</td>
+                                    <td>{{ christian_stats.male }}</td>
+                                </tr>
+                                <tr>
+                                    <td>بنات</td>
+                                    <td>{{ christian_stats.female }}</td>
+                                </tr>
+                                <tr style="background: #e9ecef; font-weight: bold;">
+                                    <td>الإجمالي</td>
+                                    <td>{{ christian_stats.total }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="christian-charts">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-chart-pie"></i> توزيع الطلاب المسيحيين</h5>
+                        <div class="chart-container">
+                            <canvas id="christianChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: السحب -->
+        <div class="tab-pane fade" id="withdrawn" role="tabpanel">
+            <div class="sub-tabs">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#withdrawn-tables" type="button">جداول</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#withdrawn-charts" type="button">رسوم بيانية</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="withdrawn-tables">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-file-export"></i> قائمة السحب</h5>
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>كود الطالب</th>
+                                    <th>اسم الطالب</th>
+                                    <th>العام الدراسي</th>
+                                    <th>الصف</th>
+                                    <th>حالة القيد</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in withdrawn_students %}
+                                <tr>
+                                    <td>{{ student.student_code }}</td>
+                                    <td>{{ student.name }}</td>
+                                    <td>{{ student.academic_year|default:"-" }}</td>
+                                    <td>{{ student.grade|default:"-" }}</td>
+                                    <td>سحب الملف</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">لا يوجد طلاب سحبوا الملف</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="withdrawn-charts">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-chart-bar"></i> السحب حسب الصف</h5>
+                        <div class="chart-container">
+                            <canvas id="withdrawnChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: إحصاء المجموع -->
+        <div class="tab-pane fade" id="stage-stats" role="tabpanel">
+            <div class="sub-tabs">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#stage-tables" type="button">جداول</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#stage-charts" type="button">رسوم بيانية</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="stage-tables">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-layer-group"></i> إحصاء المجموع حسب المرحلة والنوع</h5>
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>المرحلة</th>
+                                    <th>بنين</th>
+                                    <th>بنات</th>
+                                    <th>الإجمالي</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stage_key, stage_data in stage_stats.items %}
+                                <tr>
+                                    <td><strong>{{ stage_data.label }}</strong></td>
+                                    <td>{{ stage_data.male }}</td>
+                                    <td>{{ stage_data.female }}</td>
+                                    <td><strong>{{ stage_data.total }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="stage-charts">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-chart-bar"></i> توزيع المراحل</h5>
+                        <div class="chart-container">
+                            <canvas id="stageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 6: إجمالي الصف الأول -->
+        <div class="tab-pane fade" id="grade1-total" role="tabpanel">
+            <div class="sub-tabs">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#grade1-tables" type="button">جداول</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#grade1-charts" type="button">رسوم بيانية</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="grade1-tables">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-graduation-cap"></i> إجمالي الصف الأول حسب الحالة والنوع</h5>
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>النوع</th>
+                                    <th>انتظام مستجد</th>
+                                    <th>انتظام باقي</th>
+                                    <th>دمج</th>
+                                    <th>عمال</th>
+                                    <th>الإجمالي</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gender_key, stats in grade1_stats.items %}
+                                <tr>
+                                    <td><strong>{{ stats.label }}</strong></td>
+                                    <td>{{ stats.regular_new }}</td>
+                                    <td>{{ stats.regular_repeat }}</td>
+                                    <td>{{ stats.inclusion }}</td>
+                                    <td>{{ stats.workers_new }}</td>
+                                    <td><strong>{{ stats.total }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="fas fa-chalkboard"></i> عدد فصول الصف الأول</h5>
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>النوع</th>
+                                    <th>عدد الفصول</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>بنين</td>
+                                    <td>{{ grade1_classrooms.male }}</td>
+                                </tr>
+                                <tr>
+                                    <td>بنات</td>
+                                    <td>{{ grade1_classrooms.female }}</td>
+                                </tr>
+                                <tr style="background: #e9ecef; font-weight: bold;">
+                                    <td>الإجمالي</td>
+                                    <td>{{ grade1_classrooms.total }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="grade1-charts">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5 class="mb-3"><i class="fas fa-chart-pie"></i> توزيع الصف الأول</h5>
+                                <div class="chart-container">
+                                    <canvas id="grade1Chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5 class="mb-3"><i class="fas fa-chart-bar"></i> الفصول</h5>
+                                <div class="chart-container">
+                                    <canvas id="grade1ClassroomsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Classroom Details -->
+<div class="modal fade" id="classroomModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تفاصيل الفصل</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="classroomModalBody">
+                <!-- سيتم ملؤها بالـ JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// بيانات الرسوم البيانية
+const chartData = {
+    failed: {
+        labels: [
+            {% for cls_id, cls_data in failed_by_classroom.items %}
+            '{{ cls_data.classroom.display_name }}',
+            {% endfor %}
+        ],
+        data: [
+            {% for cls_id, cls_data in failed_by_classroom.items %}
+            {{ cls_data.count }},
+            {% endfor %}
+        ]
+    },
+    status: {
+        labels: ['انتظام مستجد', 'انتظام باقي', 'دمج', 'عمال', 'عمال باقي'],
+        male: [
+            {{ stats_by_gender_status.male.regular_new }},
+            {{ stats_by_gender_status.male.regular_repeat }},
+            {{ stats_by_gender_status.male.inclusion }},
+            {{ stats_by_gender_status.male.workers_new }},
+            {{ stats_by_gender_status.male.workers_repeat }}
+        ],
+        female: [
+            {{ stats_by_gender_status.female.regular_new }},
+            {{ stats_by_gender_status.female.regular_repeat }},
+            {{ stats_by_gender_status.female.inclusion }},
+            {{ stats_by_gender_status.female.workers_new }},
+            {{ stats_by_gender_status.female.workers_repeat }}
+        ]
+    },
+    classrooms: {
+        labels: [
+            {% for grade_key, cls_data in classrooms_by_grade_gender.items %}
+            '{{ cls_data.label }}',
+            {% endfor %}
+        ],
+        male: [
+            {% for grade_key, cls_data in classrooms_by_grade_gender.items %}
+            {{ cls_data.male }},
+            {% endfor %}
+        ],
+        female: [
+            {% for grade_key, cls_data in classrooms_by_grade_gender.items %}
+            {{ cls_data.female }},
+            {% endfor %}
+        ]
+    },
+    christian: {
+        labels: ['بنين', 'بنات'],
+        data: [{{ christian_stats.male }}, {{ christian_stats.female }}]
+    },
+    stage: {
+        labels: [
+            {% for stage_key, stage_data in stage_stats.items %}
+            '{{ stage_data.label }}',
+            {% endfor %}
+        ],
+        male: [
+            {% for stage_key, stage_data in stage_stats.items %}
+            {{ stage_data.male }},
+            {% endfor %}
+        ],
+        female: [
+            {% for stage_key, stage_data in stage_stats.items %}
+            {{ stage_data.female }},
+            {% endfor %}
+        ]
+    },
+    grade1: {
+        labels: ['انتظام مستجد', 'انتظام باقي', 'دمج', 'عمال'],
+        male: [
+            {{ grade1_stats.male.regular_new }},
+            {{ grade1_stats.male.regular_repeat }},
+            {{ grade1_stats.male.inclusion }},
+            {{ grade1_stats.male.workers_new }}
+        ],
+        female: [
+            {{ grade1_stats.female.regular_new }},
+            {{ grade1_stats.female.regular_repeat }},
+            {{ grade1_stats.female.inclusion }},
+            {{ grade1_stats.female.workers_new }}
+        ]
+    },
+    grade1Classrooms: {
+        labels: ['بنين', 'بنات'],
+        data: [{{ grade1_classrooms.male }}, {{ grade1_classrooms.female }}]
+    }
+};
+
+// متغيرات لتخزين الرسوم البيانية
+let charts = {};
+
+// عرض تفاصيل الفصل
+function showClassroomDetails(classroomId) {
+    document.getElementById('classroomModalBody').innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">جاري التحميل...</span></div></div>';
+    const modal = new bootstrap.Modal(document.getElementById('classroomModal'));
+    modal.show();
+    
+    fetch(`{% url 'student_affairs:classroom_failed_details' classroom_id=0 %}`.replace('0', classroomId))
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('classroomModalBody').innerHTML = html;
+        })
+        .catch(error => {
+            document.getElementById('classroomModalBody').innerHTML = '<div class="alert alert-danger">حدث خطأ أثناء تحميل البيانات</div>';
+        });
+}
+
+// دالة لرسم رسم بياني فقط عند فتح التبويب
+function initChart(chartId, config) {
+    const ctx = document.getElementById(chartId);
+    if (!ctx || charts[chartId]) return; // إذا كان موجوداً بالفعل، لا ترسمه مرة أخرى
+    
+    charts[chartId] = new Chart(ctx, config);
+}
+
+// تهيئة الرسوم البيانية عند فتح التبويبات الفرعية
+document.addEventListener('DOMContentLoaded', function() {
+    // استخدام event delegation للتبويبات
+    document.addEventListener('shown.bs.tab', function(e) {
+        let targetId = null;
+        const btn = e.target.closest('[data-bs-target]') || e.target;
+        if (btn) {
+            targetId = btn.getAttribute('data-bs-target');
+        }
+        if (!targetId) return;
+        
+        // رسم بياني للراسبين
+        if (targetId === '#failed-charts') {
+            setTimeout(function() {
+                initChart('failedChart', {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartData.failed.labels,
+                        datasets: [{
+                            data: chartData.failed.data,
+                            backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#ff6b6b', '#4ecdc4']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }, 100);
+        }
+        
+        // رسم بياني للإحصاء
+        if (targetId === '#general-charts') {
+            setTimeout(function() {
+                initChart('statusChart', {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.status.labels,
+                        datasets: [
+                            {
+                                label: 'بنين',
+                                data: chartData.status.male,
+                                backgroundColor: '#667eea'
+                            },
+                            {
+                                label: 'بنات',
+                                data: chartData.status.female,
+                                backgroundColor: '#f093fb'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+                
+                initChart('classroomsChart', {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.classrooms.labels,
+                        datasets: [
+                            {
+                                label: 'بنين',
+                                data: chartData.classrooms.male,
+                                backgroundColor: '#667eea'
+                            },
+                            {
+                                label: 'بنات',
+                                data: chartData.classrooms.female,
+                                backgroundColor: '#f093fb'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }, 100);
+        }
+        
+        // رسم بياني للطلاب المسيحيين
+        if (targetId === '#christian-charts') {
+            setTimeout(function() {
+                initChart('christianChart', {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartData.christian.labels,
+                        datasets: [{
+                            data: chartData.christian.data,
+                            backgroundColor: ['#667eea', '#f093fb']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }, 100);
+        }
+        
+        // رسم بياني للسحب
+        if (targetId === '#withdrawn-charts') {
+            setTimeout(function() {
+                // حساب السحب حسب الصف
+                const withdrawnByGrade = [0, 0, 0];
+                {% for student in withdrawn_students %}
+                    {% if student.grade %}
+                        {% if '1' in student.grade or 'الأول' in student.grade or 'اول' in student.grade %}
+                        withdrawnByGrade[0]++;
+                        {% elif '2' in student.grade or 'الثاني' in student.grade or 'ثاني' in student.grade %}
+                        withdrawnByGrade[1]++;
+                        {% elif '3' in student.grade or 'الثالث' in student.grade or 'ثالث' in student.grade %}
+                        withdrawnByGrade[2]++;
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                
+                initChart('withdrawnChart', {
+                    type: 'bar',
+                    data: {
+                        labels: ['الصف الأول', 'الصف الثاني', 'الصف الثالث'],
+                        datasets: [{
+                            label: 'عدد السحب',
+                            data: withdrawnByGrade,
+                            backgroundColor: '#ff6b6b'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }, 100);
+        }
+        
+        // رسم بياني للمراحل
+        if (targetId === '#stage-charts') {
+            setTimeout(function() {
+                initChart('stageChart', {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.stage.labels,
+                        datasets: [
+                            {
+                                label: 'بنين',
+                                data: chartData.stage.male,
+                                backgroundColor: '#667eea'
+                            },
+                            {
+                                label: 'بنات',
+                                data: chartData.stage.female,
+                                backgroundColor: '#f093fb'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }, 100);
+        }
+        
+        // رسم بياني للصف الأول
+        if (targetId === '#grade1-charts') {
+            setTimeout(function() {
+                initChart('grade1Chart', {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.grade1.labels,
+                        datasets: [
+                            {
+                                label: 'بنين',
+                                data: chartData.grade1.male,
+                                backgroundColor: '#667eea'
+                            },
+                            {
+                                label: 'بنات',
+                                data: chartData.grade1.female,
+                                backgroundColor: '#f093fb'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+                
+                initChart('grade1ClassroomsChart', {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.grade1Classrooms.labels,
+                        datasets: [{
+                            label: 'عدد الفصول',
+                            data: chartData.grade1Classrooms.data,
+                            backgroundColor: ['#667eea', '#f093fb']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }, 100);
+        }
+    });
+});
+</script>
+{% endblock %}
+

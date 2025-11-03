@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}الصفحة الرئيسية - نظام شؤون الطلبة{% endblock %}
+
+{% block extra_css %}
+<style>
+    .home-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 32px;
+        color: #fff;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+    .home-hero::before {
+        content: '';
+        position: absolute;
+        top: -40%;
+        right: -40%;
+        width: 80%;
+        height: 180%;
+        background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 60%);
+        transform: rotate(25deg);
+    }
+    .home-hero h1 {
+        font-weight: 900;
+        margin-bottom: 8px;
+    }
+    .home-hero p.lead {
+        margin: 0;
+        opacity: 0.95;
+    }
+
+    .kpi-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.08); }
+    .kpi-value { font-size: 36px; font-weight: 900; color: #212529; }
+    .kpi-label { margin-top: 6px; color: #6c757d; font-weight: 600; }
+    .kpi-icon { font-size: 40px; color: #667eea; opacity: .9; }
+
+    .quick-actions .card { border-radius: 16px; border: 1px solid #e9ecef; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+    .quick-actions .card-header { font-weight: 700; background: #fff; border-bottom: 2px solid #f1f3f5; }
+    .quick-action-btn { border-radius: 12px; padding: 16px; font-weight: 700; }
+    .quick-action-btn i { margin-left: 8px; }
+
+    .feature-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 16px;
+        padding: 20px;
+        height: 100%;
+    }
+    .feature-card h5 { font-weight: 800; color: #495057; }
+    .feature-card p { color: #6c757d; }
+
+    @media (max-width: 768px) {
+        .kpi-value { font-size: 28px; }
+        .kpi-icon { font-size: 32px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero -->
+    <div class="home-hero mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <i class="fas fa-graduation-cap fa-2x"></i>
+            <div>
+                <h1>مرحباً بك في نظام شؤون الطلبة</h1>
+                <p class="lead">لوحة رئيسية منظمة بإحصاءات سريعة وإجراءات فورية</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="kpi-card">
+                <div>
+                    <div class="kpi-value">{{ total_students }}</div>
+                    <div class="kpi-label">إجمالي الطلبة</div>
+                </div>
+                <i class="fas fa-users kpi-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="kpi-card">
+                <div>
+                    <div class="kpi-value">{{ active_students }}</div>
+                    <div class="kpi-label">الطلبة النشطون</div>
+                </div>
+                <i class="fas fa-user-check kpi-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row quick-actions g-3 mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-bolt"></i> الإجراءات السريعة</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{% url 'student_affairs:student_list' %}" class="btn btn-primary quick-action-btn w-100">
+                                <i class="fas fa-list"></i> عرض قيد الطلبة
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'student_affairs:add_student' %}" class="btn btn-primary quick-action-btn w-100">
+                                <i class="fas fa-user-plus"></i> إضافة طالب جديد
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'student_affairs:records_list' %}" class="btn btn-primary quick-action-btn w-100">
+                                <i class="fas fa-clipboard-list"></i> السجلات
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features / Info Cards -->
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <h5><i class="fas fa-chart-bar"></i> إحصاءات سريعة</h5>
+                <p>تابع أعداد الطلبة وحالتهم الدراسية بسرعة من اللوحة الرئيسية.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <h5><i class="fas fa-layer-group"></i> تنظيم بالصفوف</h5>
+                <p>استعرض الطلبة والسجلات ضمن تبويبات الصف الأول والثاني والثالث.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <h5><i class="fas fa-print"></i> طباعة احترافية</h5>
+                <p>قم بطباعة السجلات والإحصاءات بتصميم منسق مع تذييل ثابت.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

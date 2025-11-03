@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>تسجيل الدخول - نظام شؤون الطلبة</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            animation: float 20s infinite ease-in-out;
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: floatReverse 25s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-30px, -30px) rotate(5deg); }
+        }
+        @keyframes floatReverse {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, 30px) rotate(-5deg); }
+        }
+        
+        .login-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(30px);
+            border-radius: 35px;
+            overflow: hidden;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.35), 
+                        0 0 0 1px rgba(255,255,255,0.2) inset;
+            border: 1px solid rgba(255,255,255,0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease infinite;
+        }
+        .login-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 40px 120px rgba(0,0,0,0.45),
+                        0 0 0 1px rgba(255,255,255,0.3) inset;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: #fff;
+            padding: 3.5rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+        }
+        .login-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .login-header .brand {
+            position: relative;
+            z-index: 2;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+            animation: slideInDown 0.6s ease-out;
+        }
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .login-header .subtitle {
+            position: relative;
+            z-index: 2;
+            opacity: 0.95;
+            font-size: 1.05rem;
+            animation: slideInUp 0.6s ease-out 0.2s both;
+        }
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-icon {
+            position: relative;
+            z-index: 2;
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .login-body {
+            padding: 3rem 2.5rem;
+            background: #fff;
+        }
+        
+        .form-group {
+            margin-bottom: 1.8rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+        .form-group:nth-child(1) { animation-delay: 0.3s; }
+        .form-group:nth-child(2) { animation-delay: 0.4s; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-label {
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.05rem;
+        }
+        .form-label i {
+            color: #667eea;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 0;
+        }
+        
+        .form-control {
+            border-radius: 16px;
+            padding: 18px 60px 18px 24px;
+            border: 2.5px solid #e8e8e8;
+            font-size: 1.05rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #fafbfc 0%, #ffffff 100%);
+            color: #212529;
+            width: 100%;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+            font-weight: 500;
+        }
+        .form-control::placeholder {
+            color: #b0b8c0;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 0 0 5px rgba(102, 126, 234, 0.12), 
+                        0 6px 20px rgba(102, 126, 234, 0.2),
+                        0 0 0 1px rgba(102, 126, 234, 0.1) inset;
+            transform: translateY(-3px);
+        }
+        .form-control:focus::placeholder {
+            color: #c8d0d8;
+        }
+        .form-control:not(:placeholder-shown) {
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+        .form-control:hover:not(:focus) {
+            border-color: #c8d0d8;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            z-index: 3;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        .form-control:focus + .input-icon {
+            color: #764ba2;
+            transform: translateY(-50%) scale(1.15);
+        }
+        .input-wrapper:hover .input-icon {
+            color: #764ba2;
+        }
+        
+        .btn-login {
+            width: 100%;
+            border-radius: 18px;
+            padding: 18px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 200% 200%;
+            border: none;
+            color: #fff;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.45),
+                        0 0 0 0 rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.6s ease-out 0.5s both, 
+                       gradientShift 4s ease infinite;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s ease;
+        }
+        .btn-login::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .btn-login:hover::before {
+            left: 100%;
+        }
+        .btn-login:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(102, 126, 234, 0.55),
+                        0 0 0 8px rgba(102, 126, 234, 0.1);
+            animation: gradientShift 2s ease infinite;
+        }
+        .btn-login:hover::after {
+            opacity: 1;
+        }
+        .btn-login:active {
+            transform: translateY(-2px) scale(0.98);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        .btn-login i {
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+        .btn-login:hover i {
+            transform: translateX(-5px);
+        }
+        
+        .alert {
+            border-radius: 18px;
+            border: none;
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 2rem;
+            animation: shake 0.6s ease, fadeIn 0.4s ease;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            border-right: 4px solid #dc3545;
+        }
+        .alert i {
+            margin-left: 8px;
+            font-size: 1.2rem;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-12px); }
+            75% { transform: translateX(12px); }
+        }
+        
+        .footer-credit {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.98);
+            text-align: center;
+            font-size: 0.95rem;
+            z-index: 2;
+            background: rgba(0,0,0,0.25);
+            padding: 14px 24px;
+            border-radius: 30px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3),
+                        0 0 0 1px rgba(255,255,255,0.1) inset;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .footer-credit:hover {
+            background: rgba(0,0,0,0.35);
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+        }
+        .footer-credit a {
+            color: rgba(255,255,255,0.98);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .footer-credit a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .footer-credit i {
+            margin: 0 6px;
+            font-size: 0.9rem;
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: floatShape 20s infinite ease-in-out;
+        }
+        .shape:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            background: #fff;
+            border-radius: 50%;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        .shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            top: 60%;
+            right: 20%;
+            animation-delay: 5s;
+        }
+        .shape:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border-radius: 50%;
+            bottom: 20%;
+            left: 30%;
+            animation-delay: 10s;
+        }
+        @keyframes floatShape {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-30px, 30px) rotate(240deg); }
+        }
+        
+        @media (max-width: 576px) {
+            .login-wrapper {
+                padding: 10px;
+            }
+            .login-header {
+                padding: 2rem 1.5rem;
+            }
+            .login-body {
+                padding: 2rem 1.5rem;
+            }
+            .login-header .brand {
+                font-size: 1.6rem;
+            }
+            .footer-credit {
+                font-size: 0.8rem;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="brand">نظام شؤون الطلبة</div>
+                <div class="subtitle">تسجيل الدخول للوصول إلى لوحة التحكم</div>
+            </div>
+            
+            <div class="login-body">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle"></i> بيانات الدخول غير صحيحة. يرجى المحاولة مرة أخرى.
+                        </div>
+                    {% endif %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">
+                            <i class="fas fa-user"></i> اسم المستخدم
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   name="username" 
+                                   id="{{ form.username.id_for_label }}" 
+                                   class="form-control" 
+                                   placeholder="أدخل اسم المستخدم"
+                                   required 
+                                   autocomplete="username">
+                            <i class="fas fa-user input-icon"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">
+                            <i class="fas fa-lock"></i> كلمة المرور
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="password" 
+                                   name="password" 
+                                   id="{{ form.password.id_for_label }}" 
+                                   class="form-control" 
+                                   placeholder="أدخل كلمة المرور"
+                                   required 
+                                   autocomplete="current-password">
+                            <i class="fas fa-lock input-icon"></i>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login">
+                        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-credit">
+        <div>
+            <i class="fas fa-code"></i> مطور: <strong>أشرف صبحي</strong> | 
+            <i class="fas fa-phone"></i> 01090183430 - 01552803430 | 
+            <i class="fas fa-envelope"></i> <a href="mailto:ashraf@cybhack.com">ashraf@cybhack.com</a> | 
+            <i class="fas fa-globe"></i> <a href="https://cybhack.com" target="_blank">cybhack.com</a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

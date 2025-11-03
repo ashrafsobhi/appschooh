@@ -1,0 +1,501 @@
+{% extends 'base.html' %}
+
+{% block title %}إضافة طالب - نظام شؤون الطلبة{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-section {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+    }
+    
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #495057;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #667eea;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .form-section-title i {
+        color: #667eea;
+        font-size: 20px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1.5px solid #ced4da;
+        padding: 10px 15px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+    }
+    
+    .extracted-data-card {
+        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+        border: 2px solid #667eea;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .extracted-data-card h6 {
+        color: #667eea;
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .extracted-data-item {
+        background: white;
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .extracted-data-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .extracted-data-item small {
+        display: block;
+        color: #6c757d;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+    
+    .extracted-data-item .value {
+        font-size: 16px;
+        font-weight: 700;
+        color: #495057;
+    }
+    
+    .info-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #e7f3ff;
+        color: #0066cc;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .required-field::after {
+        content: ' *';
+        color: #dc3545;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4" style="font-weight: 700; color: #495057;">
+        <i class="fas fa-user-plus"></i> إضافة طالب جديد
+    </h2>
+    
+    <!-- إضافة طالب يدوي -->
+    <div class="card mb-4" style="border: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px 12px 0 0;">
+            <h5 class="mb-0">
+                <i class="fas fa-user-plus"></i> إضافة طالب يدوياً
+            </h5>
+        </div>
+        <div class="card-body" style="padding: 30px;">
+        <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+            {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+                
+                <!-- القسم الأول: البيانات الأساسية -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-user-circle"></i> البيانات الأساسية
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label required-field">{{ form.student_code.label }}</label>
+                            {{ form.student_code }}
+                            {% if form.student_code.errors %}
+                                <div class="text-danger mt-1">{{ form.student_code.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label required-field">{{ form.name.label }}</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- القسم الثاني: الرقم القومي والبيانات المستخرجة -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-id-card"></i> الرقم القومي والبيانات المستخرجة
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label required-field">{{ form.national_id.label }}</label>
+                            {{ form.national_id }}
+                            <div class="info-badge">
+                                <i class="fas fa-info-circle"></i>
+                                سيتم استخراج تاريخ الميلاد، السن، محافظة الميلاد، والنوع تلقائياً
+                            </div>
+                            {% if form.national_id.errors %}
+                                <div class="text-danger mt-1">{{ form.national_id.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label required-field">{{ form.exam_age.label }}</label>
+                            {{ form.exam_age }}
+                        </div>
+                    </div>
+                    
+                    <!-- عرض البيانات المستخرجة -->
+                    <div class="extracted-data-card">
+                        <h6>
+                            <i class="fas fa-magic"></i> البيانات المستخرجة من الرقم القومي
+                        </h6>
+                        <div class="row" id="extracted-data">
+                            <div class="col-md-3">
+                                <div class="extracted-data-item">
+                                    <small><i class="fas fa-calendar"></i> تاريخ الميلاد</small>
+                                    <div class="value" id="extracted-birth-date">-</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="extracted-data-item">
+                                    <small><i class="fas fa-birthday-cake"></i> السن</small>
+                                    <div class="value" id="extracted-age">-</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="extracted-data-item">
+                                    <small><i class="fas fa-map-marker-alt"></i> محافظة الميلاد</small>
+                                    <div class="value" id="extracted-governorate">-</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="extracted-data-item">
+                                    <small><i class="fas fa-venus-mars"></i> النوع</small>
+                                    <div class="value" id="extracted-gender">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- القسم الثالث: البيانات الأكاديمية -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-graduation-cap"></i> البيانات الأكاديمية
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label required-field">{{ form.religion.label }}</label>
+                            {{ form.religion }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label required-field">{{ form.nationality.label }}</label>
+                            {{ form.nationality }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label required-field">{{ form.registration_status.label }}</label>
+                            {{ form.registration_status }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label required-field">{{ form.registration_type.label }}</label>
+                            {{ form.registration_type }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label required-field">{{ form.section.label }}</label>
+                            {{ form.section }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label required-field">{{ form.school.label }}</label>
+                            {{ form.school }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">{{ form.grade.label }}</label>
+                            {{ form.grade }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">{{ form.academic_year.label }}</label>
+                            {{ form.academic_year }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">{{ form.governorate.label }}</label>
+                            {{ form.governorate }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">{{ form.administration.label }}</label>
+                            {{ form.administration }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- القسم الرابع: بيانات إضافية -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-info-circle"></i> بيانات إضافية
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label required-field">{{ form.guardian_name.label }}</label>
+                            {{ form.guardian_name }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.photo.label }}</label>
+                            {{ form.photo }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- زر الحفظ -->
+                <div class="text-center mt-4">
+                    <button type="submit" name="manual_add" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> حفظ الطالب
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- رفع ملف Excel -->
+    <div class="card" style="border: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+        <div class="card-header" style="background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%); color: white; border-radius: 12px 12px 0 0;">
+            <h5 class="mb-0">
+                <i class="fas fa-file-excel"></i> إضافة طلبة من ملف Excel
+            </h5>
+        </div>
+        <div class="card-body" style="padding: 30px;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="alert alert-primary" style="border-radius: 10px; border: none;">
+                        <h5><i class="fas fa-download"></i> الخطوة 1: تحميل قالب Excel</h5>
+                        <p class="mb-3">قم بتحميل القالب، ثم املأه بالبيانات المطلوبة.</p>
+                        <a href="{% url 'student_affairs:download_template' %}" class="btn btn-success">
+                            <i class="fas fa-download"></i> تحميل قالب Excel
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="mb-3"><i class="fas fa-upload"></i> الخطوة 2: رفع الملف المملوء</h5>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ excel_form.excel_file.label }}</label>
+                            {{ excel_form.excel_file }}
+                            <small class="form-text text-muted">{{ excel_form.excel_file.help_text }}</small>
+                            {% if excel_form.excel_file.errors %}
+                                <div class="text-danger mt-1">{{ excel_form.excel_file.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="alert alert-warning" style="border-radius: 10px; border: none;">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>تنبيه:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>تأكد من استخدام القالب الذي تم تحميله</li>
+                                <li>استخدم القيم الصحيحة من القوائم المذكورة في ورقة الملاحظات</li>
+                                <li>الشعبة "عامة" مخصصة فقط لنوع القيد "عمال"</li>
+                                <li>سيتم استخراج تاريخ الميلاد، السن، محافظة الميلاد، والنوع تلقائياً من الرقم القومي</li>
+                            </ul>
+                        </div>
+                        <button type="submit" name="excel_upload" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> رفع الملف وإضافة الطلبة
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const nationalIdInput = document.getElementById('national_id_input');
+        
+        // أكواد محافظات مصر
+        const governorateCodes = {
+            '01': 'القاهرة', '02': 'الإسكندرية', '03': 'بورسعيد', '04': 'السويس',
+            '11': 'دمياط', '12': 'الدقهلية', '13': 'الشرقية', '14': 'القليوبية',
+            '15': 'كفر الشيخ', '16': 'الغربية', '17': 'المنوفية', '18': 'البحيرة',
+            '19': 'الإسماعيلية', '21': 'الجيزة', '22': 'بني سويف', '23': 'الفيوم',
+            '24': 'المنيا', '25': 'أسيوط', '26': 'سوهاج', '27': 'قنا',
+            '28': 'أسوان', '29': 'الأقصر', '31': 'البحر الأحمر', '32': 'الوادي الجديد',
+            '33': 'مطروح', '34': 'شمال سيناء', '35': 'جنوب سيناء', '88': 'خارج الجمهورية'
+        };
+        
+        function parseNationalId(nationalId) {
+            if (!nationalId || nationalId.length !== 14) {
+                return null;
+            }
+            
+            if (!/^\d{14}$/.test(nationalId)) {
+                return null;
+            }
+            
+            try {
+                // استخراج القرن
+                const centuryDigit = parseInt(nationalId[0]);
+                let century = 1900;
+                if (centuryDigit === 2) {
+                    century = 1900;
+                } else if (centuryDigit === 3) {
+                    century = 2000;
+                }
+                
+                // استخراج تاريخ الميلاد (الأرقام 2-7: YYMMDD)
+                const year = parseInt(nationalId.substring(1, 3));
+                const month = parseInt(nationalId.substring(3, 5));
+                const day = parseInt(nationalId.substring(5, 7));
+                
+                const fullYear = century + year;
+                
+                // التحقق من صحة التاريخ
+                const birthDate = new Date(fullYear, month - 1, day);
+                if (birthDate.getFullYear() !== fullYear || 
+                    birthDate.getMonth() !== month - 1 || 
+                    birthDate.getDate() !== day) {
+                    return null;
+                }
+                
+                // استخراج محافظة الميلاد (الأرقام 8-9)
+                const governorateCode = nationalId.substring(7, 9);
+                const birthGovernorate = governorateCodes[governorateCode] || 'غير محدد';
+                
+                // استخراج الجنس من الرقم 13 (من اليسار، أي الفهرس 12)
+                const genderDigit = parseInt(nationalId[12]);
+                const gender = (genderDigit % 2 === 1) ? 'male' : 'female';
+                
+                // حساب السن
+                const today = new Date();
+                let age = today.getFullYear() - fullYear;
+                const monthDiff = today.getMonth() - (month - 1);
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < day)) {
+                    age--;
+                }
+                
+                return {
+                    birthDate: birthDate,
+                    birthGovernorate: birthGovernorate,
+                    gender: gender,
+                    age: age
+                };
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        if (nationalIdInput) {
+            nationalIdInput.addEventListener('input', function() {
+                const nationalId = this.value.trim();
+                const extractedData = parseNationalId(nationalId);
+                
+                if (extractedData) {
+                    // عرض البيانات المستخرجة
+                    const birthDateStr = extractedData.birthDate.getFullYear() + '-' + 
+                                        String(extractedData.birthDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                        String(extractedData.birthDate.getDate()).padStart(2, '0');
+                    
+                    document.getElementById('extracted-birth-date').textContent = birthDateStr;
+                    document.getElementById('extracted-age').textContent = extractedData.age + ' سنة';
+                    document.getElementById('extracted-governorate').textContent = extractedData.birthGovernorate;
+                    document.getElementById('extracted-gender').textContent = extractedData.gender === 'male' ? 'ذكر' : 'أنثى';
+                } else {
+                    // مسح البيانات المستخرجة
+                    document.getElementById('extracted-birth-date').textContent = '-';
+                    document.getElementById('extracted-age').textContent = '-';
+                    document.getElementById('extracted-governorate').textContent = '-';
+                    document.getElementById('extracted-gender').textContent = '-';
+                }
+            });
+        }
+        
+        // التحكم في الشعبة "عامة" حسب نوع القيد
+        const registrationTypeSelect = document.querySelector('select[name="registration_type"]');
+        const sectionSelect = document.querySelector('select[name="section"]');
+        
+        if (registrationTypeSelect && sectionSelect) {
+            function updateSectionOptions() {
+                const registrationType = registrationTypeSelect.value;
+                const sectionOptions = sectionSelect.options;
+                
+                // إذا كان نوع القيد "نظامي"، إخفاء "عامة"
+                // إذا كان "عمال"، إظهار "عامة"
+                for (let i = 0; i < sectionOptions.length; i++) {
+                    if (sectionOptions[i].value === 'عامة') {
+                        if (registrationType === 'نظامي') {
+                            sectionOptions[i].style.display = 'none';
+                            // إذا كانت "عامة" محددة، تغييرها إلى أول خيار متاح
+                            if (sectionSelect.value === 'عامة') {
+                                for (let j = 0; j < sectionOptions.length; j++) {
+                                    if (sectionOptions[j].value !== 'عامة') {
+                                        sectionSelect.value = sectionOptions[j].value;
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            sectionOptions[i].style.display = 'block';
+                        }
+                    }
+                }
+            }
+            
+            registrationTypeSelect.addEventListener('change', updateSectionOptions);
+            updateSectionOptions(); // تنفيذ عند تحميل الصفحة
+        }
+    });
+</script>
+{% endblock %}

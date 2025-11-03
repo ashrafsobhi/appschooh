@@ -1,0 +1,894 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}قيد الطلبة - نظام شؤون الطلبة{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .page-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .page-header p {
+        font-size: 16px;
+        opacity: 0.95;
+        margin: 0;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-right: 4px solid #667eea;
+    }
+    
+    .stats-card .stat-item {
+        text-align: center;
+        padding: 15px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        transition: all 0.3s ease;
+    }
+    
+    .stats-card .stat-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-card .stat-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 5px;
+    }
+    
+    .stats-card .stat-label {
+        font-size: 14px;
+        color: #6c757d;
+        font-weight: 600;
+    }
+    
+    .search-filter-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+    }
+    
+    .search-filter-card .form-label {
+        font-weight: 700;
+        color: #495057;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    
+    .search-filter-card .form-control,
+    .search-filter-card .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 12px 15px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .search-filter-card .form-control:focus,
+    .search-filter-card .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+    }
+    
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e9ecef;
+    }
+    
+    .students-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
+    }
+    
+    .students-table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    .students-table thead th {
+        color: white;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 16px 10px;
+        text-align: center;
+        border: none;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+    }
+    
+    .students-table thead th:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 25%;
+        height: 50%;
+        width: 1px;
+        background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .students-table thead th i {
+        margin-left: 6px;
+        font-size: 13px;
+        opacity: 0.9;
+    }
+    
+    .students-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .students-table tbody tr:hover {
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+        transform: translateX(-3px);
+        box-shadow: -3px 0 10px rgba(102, 126, 234, 0.2);
+    }
+    
+    .students-table tbody td {
+        padding: 14px 10px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 13px;
+        color: #495057;
+        border: none;
+    }
+    
+    .students-table tbody td:first-child {
+        font-weight: 700;
+        color: #667eea;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .students-table tbody td:first-child .btn {
+        font-size: 10px;
+        padding: 3px 8px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        margin-top: 5px;
+        display: inline-block;
+    }
+    
+    .students-table tbody td:first-child .btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
+    }
+    
+    .students-table tbody td:nth-child(2) {
+        font-weight: 600;
+        color: #212529;
+        text-align: right;
+        padding-right: 15px;
+        font-size: 14px;
+    }
+    
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        display: inline-block;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    
+    .badge-success {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+    }
+    
+    .badge-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+        color: white;
+    }
+    
+    .info-badge {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .empty-state {
+        padding: 80px 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .empty-state i {
+        font-size: 72px;
+        color: #dee2e6;
+        margin-bottom: 20px;
+        opacity: 0.6;
+    }
+    
+    .empty-state h5 {
+        color: #6c757d;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: #adb5bd;
+        font-size: 14px;
+    }
+    
+    .table-stats {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 18px 25px;
+        border-top: 2px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .table-stats .stats-info {
+        color: #495057;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .table-stats .stats-info i {
+        color: #667eea;
+        font-size: 16px;
+    }
+    
+    .pagination-wrapper {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .page-link {
+        border-radius: 10px !important;
+        margin: 0 4px;
+        border: 2px solid #e9ecef;
+        color: #667eea;
+        font-weight: 600;
+        padding: 10px 18px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .page-link:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+    
+    .action-btn {
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .action-btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .action-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    @media (max-width: 768px) {
+        .students-table {
+            font-size: 10px;
+        }
+        
+        .students-table thead th,
+        .students-table tbody td {
+            padding: 8px 5px;
+        }
+        
+        .students-table thead th {
+            font-size: 10px;
+        }
+        
+        .page-header h1 {
+            font-size: 24px;
+        }
+        
+        .table-stats {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-users"></i> قيد الطلبة</h1>
+                <p>إدارة وعرض بيانات جميع الطلبة المسجلين في النظام</p>
+            </div>
+            <div class="text-center">
+                <div style="font-size: 48px; opacity: 0.3;">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stats-card"><div class="stat-item"><div class="stat-number"><i class="fas fa-database"></i> {{ total_count }}</div><div class="stat-label">إجمالي الطلبة</div></div></div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card"><div class="stat-item"><div class="stat-number"><i class="fas fa-1"></i> {{ g1_count }}</div><div class="stat-label">الصف الأول</div></div></div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card"><div class="stat-item"><div class="stat-number"><i class="fas fa-2"></i> {{ g2_count }}</div><div class="stat-label">الصف الثاني</div></div></div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card"><div class="stat-item"><div class="stat-number"><i class="fas fa-3"></i> {{ g3_count }}</div><div class="stat-label">الصف الثالث</div></div></div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{% url 'student_affairs:add_student' %}" class="action-btn action-btn-primary">
+            <i class="fas fa-user-plus"></i>
+            <span>إضافة طالب جديد</span>
+        </a>
+        <a href="{% url 'student_affairs:print_student_list' %}{% if search_query %}?search={{ search_query }}{% endif %}{% if religion_filter %}{% if search_query %}&{% else %}?{% endif %}religion={{ religion_filter }}{% endif %}{% if registration_status_filter %}{% if search_query or religion_filter %}&{% else %}?{% endif %}registration_status={{ registration_status_filter }}{% endif %}" 
+           class="action-btn action-btn-primary" 
+           style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);"
+           target="_blank">
+            <i class="fas fa-print"></i>
+            <span>طباعة القائمة</span>
+        </a>
+    </div>
+
+    <!-- Search and Filter Card -->
+    <div class="search-filter-card">
+        <h5 class="mb-4" style="color: #667eea; font-weight: 700;">
+            <i class="fas fa-filter"></i> البحث والتصفية
+        </h5>
+        <form method="get">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">
+                        <i class="fas fa-search"></i> البحث
+                    </label>
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="ابحث عن كود الطالب، الاسم، أو الرقم القومي..." 
+                           value="{{ search_query }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">
+                        <i class="fas fa-filter"></i> الديانة
+                    </label>
+                    <select name="religion" class="form-select">
+                        <option value="">جميع الديانات</option>
+                        {% for value, label in religion_choices %}
+                            <option value="{{ value }}" {% if religion_filter == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">
+                        <i class="fas fa-filter"></i> حالة القيد
+                    </label>
+                    <select name="registration_status" class="form-select">
+                        <option value="">جميع حالات القيد</option>
+                        {% for value, label in registration_status_choices %}
+                            <option value="{{ value }}" {% if registration_status_filter == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label d-block">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100" style="height: 42px;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabs: gender (primary) with sub-tabs per grade -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#girls" type="button" role="tab">بنات</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#boys" type="button" role="tab">بنين</button></li>
+    </ul>
+    <div class="tab-content mt-3">
+        <!-- بنات -->
+        <div class="tab-pane fade show active" id="girls" role="tabpanel">
+            <ul class="nav nav-pills mb-3" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#g-f1" type="button">الصف الأول</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#g-f2" type="button">الصف الثاني</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#g-f3" type="button">الصف الثالث</button></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="g-f1">
+            <div class="table-container">
+                <div class="table-responsive" style="max-height: 650px; overflow-y: auto;">
+                    <table class="students-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> كود الطالب</th>
+                                <th><i class="fas fa-user"></i> اسم الطالب</th>
+                                <th><i class="fas fa-star-and-crescent"></i> الديانة</th>
+                                <th><i class="fas fa-flag"></i> التبعية</th>
+                                <th><i class="fas fa-clipboard-check"></i> حالة القيد</th>
+                                <th><i class="fas fa-bookmark"></i> نوع القيد</th>
+                                <th><i class="fas fa-users-cog"></i> الشعبة</th>
+                                <th><i class="fas fa-venus-mars"></i> النوع</th>
+                                <th><i class="fas fa-map-marker-alt"></i> محافظة الميلاد</th>
+                                <th><i class="fas fa-calendar"></i> تاريخ الميلاد</th>
+                                <th><i class="fas fa-id-card"></i> الرقم القومي</th>
+                                <th><i class="fas fa-birthday-cake"></i> السن</th>
+                                <th><i class="fas fa-graduation-cap"></i> السن عند الامتحان</th>
+                                <th><i class="fas fa-school"></i> المدرسة</th>
+                                <th><i class="fas fa-user-tie"></i> اسم ولي الأمر</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in female_g1 %}
+                            <tr>
+                                <td>
+                                    <strong>{{ student.student_code }}</strong>
+                                    <br>
+                                    <a href="{% url 'student_affairs:student_detail' student.id %}" class="btn btn-sm btn-primary mt-1" title="عرض الملف الشخصي" style="font-size: 10px; padding: 2px 8px;">
+                                        <i class="fas fa-eye"></i> عرض
+                                    </a>
+                                </td>
+                                <td>{{ student.name }}</td>
+                                <td><span class="info-badge">{{ student.get_religion_display_by_gender }}</span></td>
+                                <td><span class="info-badge">{{ student.get_nationality_display }}</span></td>
+                                <td>
+                                    <span class="status-badge {% if student.registration_status == 'ناجح ومنقول' %}badge-success{% elif student.registration_status == 'راسب وباق للإعادة' %}badge-danger{% else %}bg-secondary{% endif %}">
+                                        {% if student.registration_status == 'ناجح ومنقول' %}<i class="fas fa-check-circle"></i>{% elif student.registration_status == 'راسب وباق للإعادة' %}<i class="fas fa-times-circle"></i>{% endif %}
+                                        {{ student.get_registration_status_display }}
+                                    </span>
+                                </td>
+                                <td><span class="info-badge">{{ student.get_registration_type_display }}</span></td>
+                                <td><span class="info-badge">{{ student.get_section_display }}</span></td>
+                                <td>{% if student.gender == 'male' %}<span class="badge bg-info"><i class="fas fa-mars"></i> {{ student.get_gender_display }}</span>{% else %}<span class="badge bg-pink"><i class="fas fa-venus"></i> {{ student.get_gender_display }}</span>{% endif %}</td>
+                                <td>{{ student.birth_governorate }}</td>
+                                <td><small>{{ student.birth_date|date:"Y-m-d" }}</small></td>
+                                <td><small style="font-family: 'Courier New', monospace;">{{ student.national_id }}</small></td>
+                                <td><strong>{{ student.age }}</strong></td>
+                                <td><strong>{{ student.exam_age }}</strong></td>
+                                <td><small>{{ student.school }}</small></td>
+                                <td>{{ student.guardian_name }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="15" class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <h5>لا توجد نتائج</h5>
+                                    <p>لم يتم العثور على أي طلبة في هذا الصف يطابقون معايير البحث</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                </div>
+                <div class="tab-pane fade" id="g-f2">
+            <div class="table-container">
+                <div class="table-responsive" style="max-height: 650px; overflow-y: auto;">
+                    <table class="students-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> كود الطالب</th>
+                                <th><i class="fas fa-user"></i> اسم الطالب</th>
+                                <th><i class="fas fa-star-and-crescent"></i> الديانة</th>
+                                <th><i class="fas fa-flag"></i> التبعية</th>
+                                <th><i class="fas fa-clipboard-check"></i> حالة القيد</th>
+                                <th><i class="fas fa-bookmark"></i> نوع القيد</th>
+                                <th><i class="fas fa-users-cog"></i> الشعبة</th>
+                                <th><i class="fas fa-venus-mars"></i> النوع</th>
+                                <th><i class="fas fa-map-marker-alt"></i> محافظة الميلاد</th>
+                                <th><i class="fas fa-calendar"></i> تاريخ الميلاد</th>
+                                <th><i class="fas fa-id-card"></i> الرقم القومي</th>
+                                <th><i class="fas fa-birthday-cake"></i> السن</th>
+                                <th><i class="fas fa-graduation-cap"></i> السن عند الامتحان</th>
+                                <th><i class="fas fa-school"></i> المدرسة</th>
+                                <th><i class="fas fa-user-tie"></i> اسم ولي الأمر</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in female_g2 %}
+                            <tr>
+                                <td>
+                                    <strong>{{ student.student_code }}</strong>
+                                    <br>
+                                    <a href="{% url 'student_affairs:student_detail' student.id %}" class="btn btn-sm btn-primary mt-1" title="عرض الملف الشخصي" style="font-size: 10px; padding: 2px 8px;">
+                                        <i class="fas fa-eye"></i> عرض
+                                    </a>
+                                </td>
+                                <td>{{ student.name }}</td>
+                                <td><span class="info-badge">{{ student.get_religion_display_by_gender }}</span></td>
+                                <td><span class="info-badge">{{ student.get_nationality_display }}</span></td>
+                                <td>
+                                    <span class="status-badge {% if student.registration_status == 'ناجح ومنقول' %}badge-success{% elif student.registration_status == 'راسب وباق للإعادة' %}badge-danger{% else %}bg-secondary{% endif %}">
+                                        {% if student.registration_status == 'ناجح ومنقول' %}<i class="fas fa-check-circle"></i>{% elif student.registration_status == 'راسب وباق للإعادة' %}<i class="fas fa-times-circle"></i>{% endif %}
+                                        {{ student.get_registration_status_display }}
+                                    </span>
+                                </td>
+                                <td><span class="info-badge">{{ student.get_registration_type_display }}</span></td>
+                                <td><span class="info-badge">{{ student.get_section_display }}</span></td>
+                                <td>{% if student.gender == 'male' %}<span class="badge bg-info"><i class="fas fa-mars"></i> {{ student.get_gender_display }}</span>{% else %}<span class="badge bg-pink"><i class="fas fa-venus"></i> {{ student.get_gender_display }}</span>{% endif %}</td>
+                                <td>{{ student.birth_governorate }}</td>
+                                <td><small>{{ student.birth_date|date:"Y-m-d" }}</small></td>
+                                <td><small style="font-family: 'Courier New', monospace;">{{ student.national_id }}</small></td>
+                                <td><strong>{{ student.age }}</strong></td>
+                                <td><strong>{{ student.exam_age }}</strong></td>
+                                <td><small>{{ student.school }}</small></td>
+                                <td>{{ student.guardian_name }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="15" class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <h5>لا توجد نتائج</h5>
+                                    <p>لم يتم العثور على أي طلبة في هذا الصف يطابقون معايير البحث</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                </div>
+                <div class="tab-pane fade" id="g-f3">
+            <div class="table-container">
+                <div class="table-responsive" style="max-height: 650px; overflow-y: auto;">
+                    <table class="students-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> كود الطالب</th>
+                                <th><i class="fas fa-user"></i> اسم الطالب</th>
+                                <th><i class="fas fa-star-and-crescent"></i> الديانة</th>
+                                <th><i class="fas fa-flag"></i> التبعية</th>
+                                <th><i class="fas fa-clipboard-check"></i> حالة القيد</th>
+                                <th><i class="fas fa-bookmark"></i> نوع القيد</th>
+                                <th><i class="fas fa-users-cog"></i> الشعبة</th>
+                                <th><i class="fas fa-venus-mars"></i> النوع</th>
+                                <th><i class="fas fa-map-marker-alt"></i> محافظة الميلاد</th>
+                                <th><i class="fas fa-calendar"></i> تاريخ الميلاد</th>
+                                <th><i class="fas fa-id-card"></i> الرقم القومي</th>
+                                <th><i class="fas fa-birthday-cake"></i> السن</th>
+                                <th><i class="fas fa-graduation-cap"></i> السن عند الامتحان</th>
+                                <th><i class="fas fa-school"></i> المدرسة</th>
+                                <th><i class="fas fa-user-tie"></i> اسم ولي الأمر</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in female_g3 %}
+                            <tr>
+                                <td>
+                                    <strong>{{ student.student_code }}</strong>
+                                    <br>
+                                    <a href="{% url 'student_affairs:student_detail' student.id %}" class="btn btn-sm btn-primary mt-1" title="عرض الملف الشخصي" style="font-size: 10px; padding: 2px 8px;">
+                                        <i class="fas fa-eye"></i> عرض
+                                    </a>
+                                </td>
+                                <td>{{ student.name }}</td>
+                                <td><span class="info-badge">{{ student.get_religion_display_by_gender }}</span></td>
+                                <td><span class="info-badge">{{ student.get_nationality_display }}</span></td>
+                                <td>
+                                    <span class="status-badge {% if student.registration_status == 'ناجح ومنقول' %}badge-success{% elif student.registration_status == 'راسب وباق للإعادة' %}badge-danger{% else %}bg-secondary{% endif %}">
+                                        {% if student.registration_status == 'ناجح ومنقول' %}<i class="fas fa-check-circle"></i>{% elif student.registration_status == 'راسب وباق للإعادة' %}<i class="fas fa-times-circle"></i>{% endif %}
+                                        {{ student.get_registration_status_display }}
+                                    </span>
+                                </td>
+                                <td><span class="info-badge">{{ student.get_registration_type_display }}</span></td>
+                                <td><span class="info-badge">{{ student.get_section_display }}</span></td>
+                                <td>{% if student.gender == 'male' %}<span class="badge bg-info"><i class="fas fa-mars"></i> {{ student.get_gender_display }}</span>{% else %}<span class="badge bg-pink"><i class="fas fa-venus"></i> {{ student.get_gender_display }}</span>{% endif %}</td>
+                                <td>{{ student.birth_governorate }}</td>
+                                <td><small>{{ student.birth_date|date:"Y-m-d" }}</small></td>
+                                <td><small style="font-family: 'Courier New', monospace;">{{ student.national_id }}</small></td>
+                                <td><strong>{{ student.age }}</strong></td>
+                                <td><strong>{{ student.exam_age }}</strong></td>
+                                <td><small>{{ student.school }}</small></td>
+                                <td>{{ student.guardian_name }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="15" class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <h5>لا توجد نتائج</h5>
+                                    <p>لم يتم العثور على أي طلبة في هذا الصف يطابقون معايير البحث</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- بنين -->
+        <div class="tab-pane fade" id="boys" role="tabpanel">
+            <ul class="nav nav-pills mb-3" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#g-m1" type="button">الصف الأول</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#g-m2" type="button">الصف الثاني</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#g-m3" type="button">الصف الثالث</button></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="g-m1">
+            <div class="table-container">
+                <div class="table-responsive" style="max-height: 650px; overflow-y: auto;">
+                    <table class="students-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> كود الطالب</th>
+                                <th><i class="fas fa-user"></i> اسم الطالب</th>
+                                <th><i class="fas fa-star-and-crescent"></i> الديانة</th>
+                                <th><i class="fas fa-flag"></i> التبعية</th>
+                                <th><i class="fas fa-clipboard-check"></i> حالة القيد</th>
+                                <th><i class="fas fa-bookmark"></i> نوع القيد</th>
+                                <th><i class="fas fa-users-cog"></i> الشعبة</th>
+                                <th><i class="fas fa-venus-mars"></i> النوع</th>
+                                <th><i class="fas fa-map-marker-alt"></i> محافظة الميلاد</th>
+                                <th><i class="fas fa-calendar"></i> تاريخ الميلاد</th>
+                                <th><i class="fas fa-id-card"></i> الرقم القومي</th>
+                                <th><i class="fas fa-birthday-cake"></i> السن</th>
+                                <th><i class="fas fa-graduation-cap"></i> السن عند الامتحان</th>
+                                <th><i class="fas fa-school"></i> المدرسة</th>
+                                <th><i class="fas fa-user-tie"></i> اسم ولي الأمر</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in male_g1 %}
+                            <tr>
+                                <td>
+                                    <strong>{{ student.student_code }}</strong>
+                                    <br>
+                                    <a href="{% url 'student_affairs:student_detail' student.id %}" class="btn btn-sm btn-primary mt-1" title="عرض الملف الشخصي" style="font-size: 10px; padding: 2px 8px;">
+                                        <i class="fas fa-eye"></i> عرض
+                                    </a>
+                                </td>
+                                <td>{{ student.name }}</td>
+                                <td><span class="info-badge">{{ student.get_religion_display_by_gender }}</span></td>
+                                <td><span class="info-badge">{{ student.get_nationality_display }}</span></td>
+                                <td>
+                                    <span class="status-badge {% if student.registration_status == 'ناجح ومنقول' %}badge-success{% elif student.registration_status == 'راسب وباق للإعادة' %}badge-danger{% else %}bg-secondary{% endif %}">
+                                        {% if student.registration_status == 'ناجح ومنقول' %}<i class="fas fa-check-circle"></i>{% elif student.registration_status == 'راسب وباق للإعادة' %}<i class="fas fa-times-circle"></i>{% endif %}
+                                        {{ student.get_registration_status_display }}
+                                    </span>
+                                </td>
+                                <td><span class="info-badge">{{ student.get_registration_type_display }}</span></td>
+                                <td><span class="info-badge">{{ student.get_section_display }}</span></td>
+                                <td>{% if student.gender == 'male' %}<span class="badge bg-info"><i class="fas fa-mars"></i> {{ student.get_gender_display }}</span>{% else %}<span class="badge bg-pink"><i class="fas fa-venus"></i> {{ student.get_gender_display }}</span>{% endif %}</td>
+                                <td>{{ student.birth_governorate }}</td>
+                                <td><small>{{ student.birth_date|date:"Y-m-d" }}</small></td>
+                                <td><small style="font-family: 'Courier New', monospace;">{{ student.national_id }}</small></td>
+                                <td><strong>{{ student.age }}</strong></td>
+                                <td><strong>{{ student.exam_age }}</strong></td>
+                                <td><small>{{ student.school }}</small></td>
+                                <td>{{ student.guardian_name }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="15" class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <h5>لا توجد نتائج</h5>
+                                    <p>لم يتم العثور على أي طلبة في هذا الصف يطابقون معايير البحث</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                </div>
+                <div class="tab-pane fade" id="g-m2">
+            <div class="table-container">
+                <div class="table-responsive" style="max-height: 650px; overflow-y: auto;">
+                    <table class="students-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> كود الطالب</th>
+                                <th><i class="fas fa-user"></i> اسم الطالب</th>
+                                <th><i class="fas fa-star-and-crescent"></i> الديانة</th>
+                                <th><i class="fas fa-flag"></i> التبعية</th>
+                                <th><i class="fas fa-clipboard-check"></i> حالة القيد</th>
+                                <th><i class="fas fa-bookmark"></i> نوع القيد</th>
+                                <th><i class="fas fa-users-cog"></i> الشعبة</th>
+                                <th><i class="fas fa-venus-mars"></i> النوع</th>
+                                <th><i class="fas fa-map-marker-alt"></i> محافظة الميلاد</th>
+                                <th><i class="fas fa-calendar"></i> تاريخ الميلاد</th>
+                                <th><i class="fas fa-id-card"></i> الرقم القومي</th>
+                                <th><i class="fas fa-birthday-cake"></i> السن</th>
+                                <th><i class="fas fa-graduation-cap"></i> السن عند الامتحان</th>
+                                <th><i class="fas fa-school"></i> المدرسة</th>
+                                <th><i class="fas fa-user-tie"></i> اسم ولي الأمر</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in male_g2 %}
+                            <tr>
+                                <td>
+                                    <strong>{{ student.student_code }}</strong>
+                                    <br>
+                                    <a href="{% url 'student_affairs:student_detail' student.id %}" class="btn btn-sm btn-primary mt-1" title="عرض الملف الشخصي" style="font-size: 10px; padding: 2px 8px;">
+                                        <i class="fas fa-eye"></i> عرض
+                                    </a>
+                                </td>
+                                <td>{{ student.name }}</td>
+                                <td><span class="info-badge">{{ student.get_religion_display_by_gender }}</span></td>
+                                <td><span class="info-badge">{{ student.get_nationality_display }}</span></td>
+                                <td>
+                                    <span class="status-badge {% if student.registration_status == 'ناجح ومنقول' %}badge-success{% elif student.registration_status == 'راسب وباق للإعادة' %}badge-danger{% else %}bg-secondary{% endif %}">
+                                        {% if student.registration_status == 'ناجح ومنقول' %}<i class="fas fa-check-circle"></i>{% elif student.registration_status == 'راسب وباق للإعادة' %}<i class="fas fa-times-circle"></i>{% endif %}
+                                        {{ student.get_registration_status_display }}
+                                    </span>
+                                </td>
+                                <td><span class="info-badge">{{ student.get_registration_type_display }}</span></td>
+                                <td><span class="info-badge">{{ student.get_section_display }}</span></td>
+                                <td>{% if student.gender == 'male' %}<span class="badge bg-info"><i class="fas fa-mars"></i> {{ student.get_gender_display }}</span>{% else %}<span class="badge bg-pink"><i class="fas fa-venus"></i> {{ student.get_gender_display }}</span>{% endif %}</td>
+                                <td>{{ student.birth_governorate }}</td>
+                                <td><small>{{ student.birth_date|date:"Y-m-d" }}</small></td>
+                                <td><small style="font-family: 'Courier New', monospace;">{{ student.national_id }}</small></td>
+                                <td><strong>{{ student.age }}</strong></td>
+                                <td><strong>{{ student.exam_age }}</strong></td>
+                                <td><small>{{ student.school }}</small></td>
+                                <td>{{ student.guardian_name }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="15" class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <h5>لا توجد نتائج</h5>
+                                    <p>لم يتم العثور على أي طلبة في هذا الصف يطابقون معايير البحث</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                </div>
+                <div class="tab-pane fade" id="g-m3">
+            <div class="table-container">
+                <div class="table-responsive" style="max-height: 650px; overflow-y: auto;">
+                    <table class="students-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> كود الطالب</th>
+                                <th><i class="fas fa-user"></i> اسم الطالب</th>
+                                <th><i class="fas fa-star-and-crescent"></i> الديانة</th>
+                                <th><i class="fas fa-flag"></i> التبعية</th>
+                                <th><i class="fas fa-clipboard-check"></i> حالة القيد</th>
+                                <th><i class="fas fa-bookmark"></i> نوع القيد</th>
+                                <th><i class="fas fa-users-cog"></i> الشعبة</th>
+                                <th><i class="fas fa-venus-mars"></i> النوع</th>
+                                <th><i class="fas fa-map-marker-alt"></i> محافظة الميلاد</th>
+                                <th><i class="fas fa-calendar"></i> تاريخ الميلاد</th>
+                                <th><i class="fas fa-id-card"></i> الرقم القومي</th>
+                                <th><i class="fas fa-birthday-cake"></i> السن</th>
+                                <th><i class="fas fa-graduation-cap"></i> السن عند الامتحان</th>
+                                <th><i class="fas fa-school"></i> المدرسة</th>
+                                <th><i class="fas fa-user-tie"></i> اسم ولي الأمر</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in male_g3 %}
+                            <tr>
+                                <td>
+                                    <strong>{{ student.student_code }}</strong>
+                                    <br>
+                                    <a href="{% url 'student_affairs:student_detail' student.id %}" class="btn btn-sm btn-primary mt-1" title="عرض الملف الشخصي" style="font-size: 10px; padding: 2px 8px;">
+                                        <i class="fas fa-eye"></i> عرض
+                                    </a>
+                                </td>
+                                <td>{{ student.name }}</td>
+                                <td><span class="info-badge">{{ student.get_religion_display_by_gender }}</span></td>
+                                <td><span class="info-badge">{{ student.get_nationality_display }}</span></td>
+                                <td>
+                                    <span class="status-badge {% if student.registration_status == 'ناجح ومنقول' %}badge-success{% elif student.registration_status == 'راسب وباق للإعادة' %}badge-danger{% else %}bg-secondary{% endif %}">
+                                        {% if student.registration_status == 'ناجح ومنقول' %}<i class="fas fa-check-circle"></i>{% elif student.registration_status == 'راسب وباق للإعادة' %}<i class="fas fa-times-circle"></i>{% endif %}
+                                        {{ student.get_registration_status_display }}
+                                    </span>
+                                </td>
+                                <td><span class="info-badge">{{ student.get_registration_type_display }}</span></td>
+                                <td><span class="info-badge">{{ student.get_section_display }}</span></td>
+                                <td>{% if student.gender == 'male' %}<span class="badge bg-info"><i class="fas fa-mars"></i> {{ student.get_gender_display }}</span>{% else %}<span class="badge bg-pink"><i class="fas fa-venus"></i> {{ student.get_gender_display }}</span>{% endif %}</td>
+                                <td>{{ student.birth_governorate }}</td>
+                                <td><small>{{ student.birth_date|date:"Y-m-d" }}</small></td>
+                                <td><small style="font-family: 'Courier New', monospace;">{{ student.national_id }}</small></td>
+                                <td><strong>{{ student.age }}</strong></td>
+                                <td><strong>{{ student.exam_age }}</strong></td>
+                                <td><small>{{ student.school }}</small></td>
+                                <td>{{ student.guardian_name }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="15" class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <h5>لا توجد نتائج</h5>
+                                    <p>لم يتم العثور على أي طلبة في هذا الصف يطابقون معايير البحث</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

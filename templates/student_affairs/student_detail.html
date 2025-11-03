@@ -1,0 +1,865 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}الملف الشخصي - {{ student.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+    
+    .profile-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .profile-header-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-header-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    
+    .profile-photo-wrapper {
+        position: relative;
+        display: inline-block;
+        z-index: 2;
+    }
+    
+    .profile-photo {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        border: 6px solid rgba(255, 255, 255, 0.9);
+        object-fit: cover;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        color: #667eea;
+    }
+    
+    .profile-photo-placeholder {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .photo-upload-btn {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: 3px solid white;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        z-index: 3;
+    }
+    
+    .photo-upload-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .photo-upload-form {
+        display: none;
+    }
+    
+    .profile-info {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .profile-name {
+        font-size: 36px;
+        font-weight: 900;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .profile-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 8px 20px;
+        border-radius: 25px;
+        margin-left: 15px;
+        margin-bottom: 10px;
+        font-size: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .profile-badge i {
+        font-size: 18px;
+    }
+    
+    .action-buttons {
+        margin-top: 25px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-action:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.6);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+    
+    .info-section {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .info-section:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        transform: translateY(-3px);
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 22px;
+        font-weight: 700;
+        color: #495057;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #667eea;
+    }
+    
+    .section-header i {
+        color: #667eea;
+        font-size: 24px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .info-item {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-radius: 12px;
+        padding: 18px;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+    
+    .info-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        border-left-color: #764ba2;
+    }
+    
+    .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .info-label i {
+        font-size: 14px;
+        color: #667eea;
+    }
+    
+    .info-value {
+        font-size: 18px;
+        font-weight: 700;
+        color: #212529;
+        word-break: break-word;
+    }
+    
+    .badge-custom {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .badge-success-custom {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+    }
+    
+    .badge-danger-custom {
+        background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+        color: white;
+    }
+    
+    .badge-info-custom {
+        background: linear-gradient(135deg, #2196F3 0%, #64B5F6 100%);
+        color: white;
+    }
+    
+    .badge-pink-custom {
+        background: linear-gradient(135deg, #e91e63 0%, #f06292 100%);
+        color: white;
+    }
+    
+    .attachments-section {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+    }
+    
+    .attachment-form-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        border: 2px dashed #667eea;
+    }
+    
+    .attachment-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .attachment-card:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
+        border-color: #667eea;
+    }
+    
+    .file-icon-large {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin-left: 15px;
+        flex-shrink: 0;
+    }
+    
+    .file-icon-pdf {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        color: white;
+    }
+    
+    .file-icon-word {
+        background: linear-gradient(135deg, #4dabf7 0%, #339af0 100%);
+        color: white;
+    }
+    
+    .file-icon-excel {
+        background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+        color: white;
+    }
+    
+    .file-icon-image {
+        background: linear-gradient(135deg, #ffa94d 0%, #ff922b 100%);
+        color: white;
+    }
+    
+    .file-icon-default {
+        background: linear-gradient(135deg, #868e96 0%, #6c757d 100%);
+        color: white;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-radius: 12px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .empty-state i {
+        font-size: 64px;
+        color: #adb5bd;
+        margin-bottom: 20px;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 1.5px solid #ced4da;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Sub navigation */
+    .subnav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(255,255,255,0.75);
+        backdrop-filter: blur(6px);
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 8px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 14px rgba(0,0,0,.06);
+    }
+    .subnav .nav-link { border-radius: 10px; font-weight: 700; color: #495057; }
+    .subnav .nav-link.active { background: #667eea; color: #fff; }
+
+    @media (max-width: 768px) {
+        .profile-name { font-size: 24px; }
+        .profile-photo { width: 120px; height: 120px; }
+        .info-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- رأس الملف الشخصي -->
+    <div class="profile-header-card">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center">
+                <div class="profile-photo-wrapper">
+                    <div class="profile-photo">
+                        {% if student.photo %}
+                            <img src="{{ student.photo.url }}" alt="{{ student.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <div class="profile-photo-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="photo-upload-btn" onclick="document.getElementById('photo-file-input').click()">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <form method="post" enctype="multipart/form-data" class="photo-upload-form" id="photo-upload-form">
+                        {% csrf_token %}
+                        <input type="file" name="photo" accept="image/*" id="photo-file-input" required onchange="document.getElementById('photo-upload-form').submit()" style="display: none;">
+                        <input type="hidden" name="update_photo" value="1">
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-9 profile-info">
+                <h1 class="profile-name">{{ student.name }}</h1>
+                <div class="d-flex flex-wrap">
+                    <div class="profile-badge">
+                        <i class="fas fa-hashtag"></i>
+                        <span>{{ student.student_code }}</span>
+                    </div>
+                    <div class="profile-badge">
+                        <i class="fas fa-id-card"></i>
+                        <span>{{ student.national_id }}</span>
+                    </div>
+                    {% if student.gender == 'male' %}
+                    <div class="profile-badge">
+                        <i class="fas fa-mars"></i>
+                        <span>ذكر</span>
+                    </div>
+                    {% else %}
+                    <div class="profile-badge">
+                        <i class="fas fa-venus"></i>
+                        <span>أنثى</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="action-buttons">
+                    <a href="{% url 'student_affairs:student_list' %}" class="btn-action">
+                        <i class="fas fa-arrow-right"></i> العودة للقائمة
+                    </a>
+                    <a href="{% url 'student_affairs:student_id_card' student.id %}" target="_blank" class="btn-action">
+                        <i class="fas fa-id-card"></i> طباعة البطاقة التعريفية
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sub Navigation -->
+    <div class="subnav">
+        <ul class="nav nav-pills gap-2">
+            <li class="nav-item"><a class="nav-link active" href="#overview">نظرة عامة</a></li>
+            <li class="nav-item"><a class="nav-link" href="#records">السجلات</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contact">بيانات التواصل</a></li>
+            <li class="nav-item"><a class="nav-link" href="#attachments">المرفقات</a></li>
+        </ul>
+    </div>
+
+    <div class="row" id="overview">
+        <!-- البيانات الأساسية -->
+        <div class="col-md-6">
+            <div class="info-section">
+                <div class="section-header">
+                    <i class="fas fa-info-circle"></i>
+                    <span>البيانات الأساسية</span>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-star-and-crescent"></i>
+                            الديانة
+                        </div>
+                        <div class="info-value">{{ student.get_religion_display_by_gender }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-flag"></i>
+                            التبعية
+                        </div>
+                        <div class="info-value">{{ student.get_nationality_display }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-venus-mars"></i>
+                            النوع
+                        </div>
+                        <div class="info-value">
+                            {% if student.gender == 'male' %}
+                                <span class="badge-custom badge-info-custom">
+                                    <i class="fas fa-mars"></i> {{ student.get_gender_display }}
+                                </span>
+                            {% else %}
+                                <span class="badge-custom badge-pink-custom">
+                                    <i class="fas fa-venus"></i> {{ student.get_gender_display }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-calendar"></i>
+                            تاريخ الميلاد
+                        </div>
+                        <div class="info-value">{{ student.birth_date|date:"Y-m-d" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-map-marker-alt"></i>
+                            محافظة الميلاد
+                        </div>
+                        <div class="info-value">{{ student.birth_governorate }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-birthday-cake"></i>
+                            السن
+                        </div>
+                        <div class="info-value">{{ student.age }} سنة</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-map-marked-alt"></i>
+                            العنوان
+                        </div>
+                        <div class="info-value">{{ student.address|default:'—' }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-phone"></i>
+                            هاتف الطالب
+                        </div>
+                        <div class="info-value">{{ student.phone|default:'—' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- البيانات الأكاديمية -->
+        <div class="col-md-6">
+            <div class="info-section">
+                <div class="section-header">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>البيانات الأكاديمية</span>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-clipboard-check"></i>
+                            حالة القيد
+                        </div>
+                        <div class="info-value">
+                            <span class="badge-custom {% if student.registration_status == 'ناجح ومنقول' %}badge-success-custom{% else %}badge-danger-custom{% endif %}">
+                                <i class="fas {% if student.registration_status == 'ناجح ومنقول' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+                                {{ student.get_registration_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-bookmark"></i>
+                            نوع القيد
+                        </div>
+                        <div class="info-value">{{ student.get_registration_type_display }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-users-cog"></i>
+                            الشعبة
+                        </div>
+                        <div class="info-value">{{ student.get_section_display }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-school"></i>
+                            المدرسة
+                        </div>
+                        <div class="info-value">{{ student.school }}</div>
+                    </div>
+                    {% if student.governorate %}
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-map"></i>
+                            المحافظة
+                        </div>
+                        <div class="info-value">{{ student.governorate }}</div>
+                    </div>
+                    {% endif %}
+                    {% if student.administration %}
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-building"></i>
+                            الإدارة
+                        </div>
+                        <div class="info-value">{{ student.administration }}</div>
+                    </div>
+                    {% endif %}
+                    {% if student.grade %}
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-layer-group"></i>
+                            الصف
+                        </div>
+                        <div class="info-value">{{ student.grade }}</div>
+                    </div>
+                    {% endif %}
+                    {% if student.academic_year %}
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-calendar-alt"></i>
+                            العام الأكاديمي
+                        </div>
+                        <div class="info-value">{{ student.academic_year }}</div>
+                    </div>
+                    {% endif %}
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-clock"></i>
+                            السن عند الامتحان
+                        </div>
+                        <div class="info-value">{{ student.exam_age }} سنة</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- السجلات -->
+        <div class="col-md-12" id="records">
+            <div class="info-section">
+                <div class="section-header">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>السجلات</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>الإجراء</th>
+                                <th>التبعية</th>
+                                <th>حالة القيد</th>
+                                <th>نوع القيد</th>
+                                <th>الشعبة</th>
+                                <th>الصف</th>
+                                <th>المدرسة</th>
+                                <th>العام</th>
+                                <th>اللغة 1</th>
+                                <th>اللغة 2</th>
+                                <th>السن أول أكتوبر</th>
+                                <th>موقف الدمج</th>
+                                <th>تفاصيل الدمج</th>
+                                <th>حالة الدور</th>
+                                <th>محول من</th>
+                                <th>محول إلى</th>
+                                <th>عائد</th>
+                                <th>كود الإدارة</th>
+                                <th>مسلسل المدرسة</th>
+                                <th>وافد</th>
+                                <th>ميلاد الوافد</th>
+                                <th>محل ميلاد الوافد</th>
+                                <th>نوع الوافد</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>{{ record_action }}</strong></td>
+                                <td>{{ student.get_nationality_display }}</td>
+                                <td>{{ student.get_registration_status_display }}</td>
+                                <td>{{ student.get_registration_type_display }}</td>
+                                <td>{{ student.get_section_display }}</td>
+                                <td>{{ student.grade }}</td>
+                                <td>{{ student.school }}</td>
+                                <td>{{ student.academic_year }}</td>
+                                <td>{{ student.first_foreign_language }}</td>
+                                <td>{{ student.second_foreign_language }}</td>
+                                <td>{{ student.exam_age }}</td>
+                                <td>{{ student.inclusion_status }}</td>
+                                <td>{{ student.inclusion_details }}</td>
+                                <td>{{ student.exam_round }}</td>
+                                <td>{{ student.transferred_from }}</td>
+                                <td>{{ student.transferred_to }}</td>
+                                <td>{% if student.is_returnee %}نعم{% else %}لا{% endif %}</td>
+                                <td>{{ student.admin_code }}</td>
+                                <td>{{ student.school_serial }}</td>
+                                <td>{% if student.is_foreign_student %}وافد{% else %}محلي{% endif %}</td>
+                                <td>{{ student.foreign_birth_date|date:'Y-m-d' }}</td>
+                                <td>{{ student.foreign_birth_place }}</td>
+                                <td>{% if student.foreign_gender == 'male' %}ذكر{% elif student.foreign_gender == 'female' %}أنثى{% endif %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- بيانات ولي الأمر -->
+        <div class="col-md-12">
+            <div class="info-section">
+                <div class="section-header">
+                    <i class="fas fa-user-tie"></i>
+                    <span>بيانات ولي الأمر</span>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item" style="grid-column: 1 / -1;">
+                        <div class="info-label">
+                            <i class="fas fa-user"></i>
+                            اسم ولي الأمر
+                        </div>
+                        <div class="info-value" style="font-size: 20px;">{{ student.guardian_name }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-phone-square"></i>
+                            هاتف ولي الأمر
+                        </div>
+                        <div class="info-value">{{ student.guardian_phone|default:'—' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- نموذج تعديل بيانات التواصل -->
+        <div class="col-md-12" id="contact">
+            <div class="info-section">
+                <div class="section-header">
+                    <i class="fas fa-address-book"></i>
+                    <span>تعديل بيانات التواصل</span>
+                </div>
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    <div class="col-md-6">
+                        <label class="form-label">{{ contact_form.address.label }}</label>
+                        {{ contact_form.address }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">{{ contact_form.phone.label }}</label>
+                        {{ contact_form.phone }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">{{ contact_form.guardian_phone.label }}</label>
+                        {{ contact_form.guardian_phone }}
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" name="update_contact" class="btn btn-primary"><i class="fas fa-save"></i> حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- قسم المرفقات -->
+        <div class="col-md-12" id="attachments">
+            <div class="attachments-section">
+                <div class="section-header">
+                    <i class="fas fa-paperclip"></i>
+                    <span>مرفقات الطالب</span>
+                </div>
+                
+                <!-- نموذج إضافة مرفق -->
+                <div class="attachment-form-card">
+                    <h6 class="mb-3" style="color: #667eea; font-weight: 700;">
+                        <i class="fas fa-plus-circle"></i> إضافة مرفق جديد
+                    </h6>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">عنوان المستند</label>
+                                {{ form.title }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الملف</label>
+                                {{ form.file }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">الوصف (اختياري)</label>
+                                {{ form.description }}
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="submit" name="add_attachment" class="btn btn-primary w-100" style="padding: 12px;">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- قائمة المرفقات -->
+                {% if attachments %}
+                    <div class="row">
+                        {% for attachment in attachments %}
+                        <div class="col-md-6 mb-3">
+                            <div class="attachment-card">
+                                <div class="d-flex align-items-start">
+                                    <div class="file-icon-large" data-file-icon="{{ attachment.get_file_icon }}">
+                                        <i class="fas {{ attachment.get_file_icon }}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-2" style="font-weight: 700; color: #495057;">
+                                            {{ attachment.title }}
+                                        </h6>
+                                        {% if attachment.description %}
+                                            <p class="text-muted small mb-2">{{ attachment.description }}</p>
+                                        {% endif %}
+                                        <small class="text-muted d-flex align-items-center gap-2">
+                                            <i class="fas fa-calendar"></i>
+                                            {{ attachment.uploaded_at|date:"Y-m-d H:i" }}
+                                        </small>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-sm btn-primary" title="تحميل">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        <a href="{% url 'student_affairs:delete_attachment' attachment.id %}" 
+                                           class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('هل أنت متأكد من حذف هذا المرفق؟')"
+                                           title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h5 class="text-muted mt-3">لا توجد مرفقات</h5>
+                        <p class="text-muted">لم يتم إضافة أي مرفقات لهذا الطالب بعد</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // تحديد نوع أيقونة الملف بشكل ديناميكي
+    document.querySelectorAll('.file-icon-large').forEach(function(icon) {
+        const fileIcon = icon.getAttribute('data-file-icon');
+        if (fileIcon === 'fa-file-pdf') {
+            icon.classList.add('file-icon-pdf');
+        } else if (fileIcon === 'fa-file-word') {
+            icon.classList.add('file-icon-word');
+        } else if (fileIcon === 'fa-file-excel') {
+            icon.classList.add('file-icon-excel');
+        } else if (fileIcon === 'fa-file-image') {
+            icon.classList.add('file-icon-image');
+        } else {
+            icon.classList.add('file-icon-default');
+        }
+    });
+</script>
+{% endblock %}

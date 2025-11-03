@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}الفصول الدراسية{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card mb-3">
+        <div class="card-header"><i class="fas fa-chalkboard-teacher"></i> الفصول الدراسية</div>
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="genderTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="male-tab" data-bs-toggle="tab" data-bs-target="#male" type="button" role="tab">بنين</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="female-tab" data-bs-toggle="tab" data-bs-target="#female" type="button" role="tab">بنات</button>
+                </li>
+            </ul>
+            <div class="tab-content mt-3">
+                <!-- بنين -->
+                <div class="tab-pane fade show active" id="male" role="tabpanel" aria-labelledby="male-tab">
+                    <ul class="nav nav-pills mb-3" role="tablist">
+                        <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#m-g1" type="button">الصف الأول</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#m-g2" type="button">الصف الثاني</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#m-g3" type="button">الصف الثالث</button></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="m-g1">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">الصف الأول - بنين</h5>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-success" target="_blank" href="{% url 'student_affairs:classrooms_print_absence_grade' 'male' 'g1' %}"><i class="fas fa-print"></i> طباعة قوائم الغياب للصف الأول</a>
+                                    <a class="btn btn-outline-primary" target="_blank" href="{% url 'student_affairs:classrooms_print_grade' 'male' 'g1' %}"><i class="fas fa-print"></i> طباعة كل فصول الصف الأول</a>
+                                    <a class="btn btn-primary" href="{% url 'student_affairs:add_classroom' %}?gender=male&grade=g1"><i class="fas fa-plus"></i> إضافة فصل</a>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                {% for cls in male.g1 %}
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1">{{ cls.name|default:cls.display_name }}</h5>
+                                                <small class="text-muted">مقاعد: {{ cls.seats_count }} | طابق: {{ cls.floor }}</small>
+                                            </div>
+                                            <a class="btn btn-sm btn-primary" href="{% url 'student_affairs:classroom_detail' cls.id %}">فتح</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12"><div class="alert alert-info">لا توجد فصول بعد</div></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="m-g2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">الصف الثاني - بنين</h5>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-success" target="_blank" href="{% url 'student_affairs:classrooms_print_absence_grade' 'male' 'g2' %}"><i class="fas fa-print"></i> طباعة قوائم الغياب للصف الثاني</a>
+                                    <a class="btn btn-outline-primary" target="_blank" href="{% url 'student_affairs:classrooms_print_grade' 'male' 'g2' %}"><i class="fas fa-print"></i> طباعة كل فصول الصف الثاني</a>
+                                    <a class="btn btn-primary" href="{% url 'student_affairs:add_classroom' %}?gender=male&grade=g2"><i class="fas fa-plus"></i> إضافة فصل</a>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                {% for cls in male.g2 %}
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1">{{ cls.name|default:cls.display_name }}</h5>
+                                                <small class="text-muted">مقاعد: {{ cls.seats_count }} | طابق: {{ cls.floor }}</small>
+                                            </div>
+                                            <a class="btn btn-sm btn-primary" href="{% url 'student_affairs:classroom_detail' cls.id %}">فتح</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12"><div class="alert alert-info">لا توجد فصول بعد</div></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="m-g3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">الصف الثالث - بنين</h5>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-success" target="_blank" href="{% url 'student_affairs:classrooms_print_absence_grade' 'male' 'g3' %}"><i class="fas fa-print"></i> طباعة قوائم الغياب للصف الثالث</a>
+                                    <a class="btn btn-outline-primary" target="_blank" href="{% url 'student_affairs:classrooms_print_grade' 'male' 'g3' %}"><i class="fas fa-print"></i> طباعة كل فصول الصف الثالث</a>
+                                    <a class="btn btn-primary" href="{% url 'student_affairs:add_classroom' %}?gender=male&grade=g3"><i class="fas fa-plus"></i> إضافة فصل</a>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                {% for cls in male.g3 %}
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1">{{ cls.name|default:cls.display_name }}</h5>
+                                                <small class="text-muted">مقاعد: {{ cls.seats_count }} | طابق: {{ cls.floor }}</small>
+                                            </div>
+                                            <a class="btn btn-sm btn-primary" href="{% url 'student_affairs:classroom_detail' cls.id %}">فتح</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12"><div class="alert alert-info">لا توجد فصول بعد</div></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بنات -->
+                <div class="tab-pane fade" id="female" role="tabpanel" aria-labelledby="female-tab">
+                    <ul class="nav nav-pills mb-3" role="tablist">
+                        <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#f-g1" type="button">الصف الأول</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#f-g2" type="button">الصف الثاني</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#f-g3" type="button">الصف الثالث</button></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="f-g1">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">الصف الأول - بنات</h5>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-success" target="_blank" href="{% url 'student_affairs:classrooms_print_absence_grade' 'female' 'g1' %}"><i class="fas fa-print"></i> طباعة قوائم الغياب للصف الأول</a>
+                                    <a class="btn btn-outline-primary" target="_blank" href="{% url 'student_affairs:classrooms_print_grade' 'female' 'g1' %}"><i class="fas fa-print"></i> طباعة كل فصول الصف الأول</a>
+                                    <a class="btn btn-primary" href="{% url 'student_affairs:add_classroom' %}?gender=female&grade=g1"><i class="fas fa-plus"></i> إضافة فصل</a>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                {% for cls in female.g1 %}
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1">{{ cls.name|default:cls.display_name }}</h5>
+                                                <small class="text-muted">مقاعد: {{ cls.seats_count }} | طابق: {{ cls.floor }}</small>
+                                            </div>
+                                            <a class="btn btn-sm btn-primary" href="{% url 'student_affairs:classroom_detail' cls.id %}">فتح</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12"><div class="alert alert-info">لا توجد فصول بعد</div></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="f-g2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">الصف الثاني - بنات</h5>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-success" target="_blank" href="{% url 'student_affairs:classrooms_print_absence_grade' 'female' 'g2' %}"><i class="fas fa-print"></i> طباعة قوائم الغياب للصف الثاني</a>
+                                    <a class="btn btn-outline-primary" target="_blank" href="{% url 'student_affairs:classrooms_print_grade' 'female' 'g2' %}"><i class="fas fa-print"></i> طباعة كل فصول الصف الثاني</a>
+                                    <a class="btn btn-primary" href="{% url 'student_affairs:add_classroom' %}?gender=female&grade=g2"><i class="fas fa-plus"></i> إضافة فصل</a>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                {% for cls in female.g2 %}
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1">{{ cls.name|default:cls.display_name }}</h5>
+                                                <small class="text-muted">مقاعد: {{ cls.seats_count }} | طابق: {{ cls.floor }}</small>
+                                            </div>
+                                            <a class="btn btn-sm btn-primary" href="{% url 'student_affairs:classroom_detail' cls.id %}">فتح</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12"><div class="alert alert-info">لا توجد فصول بعد</div></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="f-g3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">الصف الثالث - بنات</h5>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-success" target="_blank" href="{% url 'student_affairs:classrooms_print_absence_grade' 'female' 'g3' %}"><i class="fas fa-print"></i> طباعة قوائم الغياب للصف الثالث</a>
+                                    <a class="btn btn-outline-primary" target="_blank" href="{% url 'student_affairs:classrooms_print_grade' 'female' 'g3' %}"><i class="fas fa-print"></i> طباعة كل فصول الصف الثالث</a>
+                                    <a class="btn btn-primary" href="{% url 'student_affairs:add_classroom' %}?gender=female&grade=g3"><i class="fas fa-plus"></i> إضافة فصل</a>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                {% for cls in female.g3 %}
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1">{{ cls.name|default:cls.display_name }}</h5>
+                                                <small class="text-muted">مقاعد: {{ cls.seats_count }} | طابق: {{ cls.floor }}</small>
+                                            </div>
+                                            <a class="btn btn-sm btn-primary" href="{% url 'student_affairs:classroom_detail' cls.id %}">فتح</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12"><div class="alert alert-info">لا توجد فصول بعد</div></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

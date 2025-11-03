@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}فصل {{ classroom.display_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>فصل {{ classroom.name|default:classroom.display_name }} (مقاعد: {{ classroom.seats_count }}, متبقي: {{ remaining }})</h4>
+        <div class="d-flex gap-2">
+            <a href="{% url 'student_affairs:classroom_print' classroom.id %}" target="_blank" class="btn btn-primary"><i class="fas fa-print"></i> طباعة قوائم الفصل</a>
+            <a href="{% url 'student_affairs:classrooms_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-right"></i> عودة</a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header"><i class="fas fa-user-plus"></i> إضافة طالب</div>
+                <div class="card-body">
+                    <!-- اختيار مدمج مع بحث داخل القائمة -->
+                    <form method="post" id="add-students-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="q" value="" />
+                        <label class="form-label">اختر الطالب (ترتيب أبجدي)</label>
+                        <div class="mb-2">
+                            <input id="picker-search" type="text" class="form-control mb-2" placeholder="اكتب للبحث داخل القائمة" style="border-radius: 12px;">
+                            <select id="student-picker" class="form-select" style="border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                <option value="">-- اختر --</option>
+                                {% for s in form.fields.students.queryset %}
+                                <option value="{{ s.id }}">{{ s.name }} - {{ s.student_code }}</option>
+                                {% empty %}
+                                <option value="">لا يوجد طلاب مطابقون</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-2"><strong>المحددون:</strong></div>
+                        <div id="selected-chips" class="d-flex flex-wrap gap-2 mb-2"></div>
+
+                        <!-- حاوية المدخلات الخفية للأرسال -->
+                        <div id="selected-hidden"></div>
+
+                        <button class="btn btn-primary mt-2" type="submit" name="add_student">إضافة</button>
+                    </form>
+                    <div class="alert alert-info mt-3">
+                        يُسمح فقط بطلاب نفس الصف والنوع وغير المسندين لفصل آخر. يتم التوقف عند امتلاء المقاعد.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-header"><i class="fas fa-chair"></i> المقاعد</div>
+                <div class="card-body">
+                    <div class="seats-grid">
+                        {% for seat in seats %}
+                        {% if seat.student %}
+                        <div class="seat seat-occupied">
+                            <span class="seat-index">{{ seat.index }}</span>
+                            <div class="seat-avatar occupied">
+                                {% if seat.student.photo %}
+                                    <img src="{{ seat.student.photo.url }}" alt="{{ seat.student.name }}" />
+                                {% else %}
+                                    <i class="fas fa-user"></i>
+                                {% endif %}
+                            </div>
+                            <div class="seat-info">
+                                <div class="seat-name" title="{{ seat.student.name }}">{{ seat.student.name }}</div>
+                                <div class="seat-sub">{{ seat.student.student_code }}</div>
+                            </div>
+                            <form method="post" class="mt-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="student_id" value="{{ seat.student.id }}" />
+                                <button class="btn btn-sm btn-light text-danger w-100"><i class="fas fa-times"></i> إزالة</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="seat seat-empty">
+                            <span class="seat-index">{{ seat.index }}</span>
+                            <div class="seat-avatar empty">
+                                <i class="fas fa-chair"></i>
+                            </div>
+                            <div class="seat-info">
+                                <div class="seat-name">فارغ</div>
+                                <div class="seat-sub">متاح</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #student-picker:focus { box-shadow: 0 0 0 .25rem rgba(102,126,234,.25); border-color: #667eea; }
+    #selected-chips .chip {
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    #selected-chips .chip .remove {
+        color: #dc3545;
+        text-decoration: none;
+        font-weight: 700;
+        margin-right: 6px;
+    }
+    #selected-chips .chip .remove:hover { opacity: .8; }
+    #selected-chips .name { font-weight: 700; color: #495057; }
+    #selected-chips .code { color: #6c757d; font-size: 12px; }
+    .card-header { font-weight: 800; }
+    .btn-primary { border-radius: 10px; }
+
+    /* Seats Professional Styles */
+    .seats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+    }
+    .seat {
+        position: relative;
+        border-radius: 14px;
+        padding: 14px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+        transition: transform .15s ease, box-shadow .15s ease;
+        overflow: hidden;
+        background: #fff;
+    }
+    .seat:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
+    .seat-occupied {
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+        border-color: #ffc9c9;
+    }
+    .seat-empty {
+        background: linear-gradient(135deg, #f3fff8 0%, #e6fcf5 100%);
+        border-color: #c3fae8;
+    }
+    .seat-index {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: #343a40;
+        color: #fff;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .seat-avatar {
+        width: 54px; height: 54px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 8px;
+        font-size: 22px;
+    }
+    .seat-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; display: block; }
+    .seat-avatar.occupied { background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%); color: #fff; }
+    .seat-avatar.empty { background: linear-gradient(135deg, #51cf66 0%, #40c057 100%); color: #fff; }
+    .seat-info { line-height: 1.2; }
+    .seat-name { font-weight: 800; color: #343a40; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .seat-sub { color: #6c757d; font-size: 12px; }
+    @media (max-width: 576px){
+        .seats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+
+<script>
+(function(){
+    const picker = document.getElementById('student-picker');
+    const pickerSearch = document.getElementById('picker-search');
+    const chips = document.getElementById('selected-chips');
+    const hidden = document.getElementById('selected-hidden');
+
+    function hasSelected(id){
+        return !!document.querySelector('input[name="students"][value="'+id+'"]');
+    }
+
+    function addSelected(id, label){
+        if(!id || hasSelected(id)) return;
+        const chip = document.createElement('div');
+        chip.className = 'chip d-flex align-items-center gap-2';
+        chip.dataset.id = id;
+        const [name, code] = (label||'').split(' - ');
+        chip.innerHTML = '<a href="#" class="remove" aria-label="إزالة">✕</a>'+
+                         '<span class="name">'+(name||label)+'</span>'+
+                         (code? ' <span class="code">('+code+')</span>' : '');
+        chip.querySelector('.remove').addEventListener('click', function(e){
+            e.preventDefault();
+            const inp = document.querySelector('input[name="students"][value="'+id+'"]');
+            if (inp) inp.remove();
+            chip.remove();
+        });
+        chips.appendChild(chip);
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'students';
+        input.value = id;
+        hidden.appendChild(input);
+    }
+
+    picker?.addEventListener('change', function(){
+        const id = picker.value;
+        const label = picker.options[picker.selectedIndex]?.text;
+        addSelected(id, label);
+        // إبقاء القائمة كما هي ثم إعادة المؤشر إلى خيار فارغ لتسهيل اختيار آخر مباشرة
+        picker.value = '';
+    });
+
+    // فلترة داخلية لعناصر القائمة
+    pickerSearch?.addEventListener('input', function(){
+        const q = (pickerSearch.value || '').trim().toLowerCase();
+        for (let i = 0; i < picker.options.length; i++) {
+            const opt = picker.options[i];
+            if (!opt.value) { opt.hidden = false; continue; }
+            const txt = (opt.text || '').toLowerCase();
+            opt.hidden = q && !txt.includes(q);
+        }
+    });
+})();
+</script>
+{% endblock %}
+
+

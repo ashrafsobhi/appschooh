@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | لوحة تحكم نظام شؤون الطلبة{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <i class="fas fa-graduation-cap"></i>
+        نظام شؤون الطلبة
+    </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

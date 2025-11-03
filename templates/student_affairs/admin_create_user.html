@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}إنشاء مستخدم جديد{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:900px;">
+    <div class="card shadow-lg border-0" style="border-radius:16px; overflow:hidden;">
+        <div class="card-header" style="background: linear-gradient(135deg,#667eea,#764ba2); color:#fff;">
+            <h5 class="mb-0"><i class="fas fa-user-plus"></i> إنشاء مستخدم جديد</h5>
+        </div>
+        <div class="card-body p-4">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.full_name.label }}</label>
+                    {{ form.full_name }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.phone.label }}</label>
+                    {{ form.phone }}
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label">{{ form.email.label }}</label>
+                    {{ form.email }}
+                </div>
+                <div class="col-12 d-flex justify-content-end">
+                    <button class="btn btn-primary"><i class="fas fa-magic"></i> إنشاء</button>
+                </div>
+            </form>
+
+            {% if form.errors %}
+                <div class="alert alert-danger mt-3">{{ form.errors }}</div>
+            {% endif %}
+
+            {% if created %}
+            <hr>
+            <div class="alert alert-success">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-check-circle text-success"></i>
+                    <strong>تم الإنشاء بنجاح</strong>
+                </div>
+                <div class="mt-2">اسم المستخدم: <code id="u">{{ created.username }}</code></div>
+                <div>كلمة المرور: <code id="p">{{ created.password }}</code></div>
+                <button class="btn btn-sm btn-outline-secondary mt-2" onclick="copyCreds()"><i class="fas fa-copy"></i> نسخ</button>
+            </div>
+            <script>
+                function copyCreds(){
+                    const t = `Username: {{ created.username }}\nPassword: {{ created.password }}`;
+                    navigator.clipboard && navigator.clipboard.writeText(t);
+                }
+            </script>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

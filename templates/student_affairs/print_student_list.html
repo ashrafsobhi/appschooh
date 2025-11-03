@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل قيد الطلبة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            padding: 20px;
+            background: white;
+            font-size: 11px;
+            color: #000;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .print-page {
+                page-break-after: always;
+            }
+            
+            .print-page:last-child {
+                page-break-after: auto;
+            }
+        }
+        
+        .header-section {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .header-right {
+            text-align: right;
+        }
+        
+        .header-right h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #000;
+        }
+        
+        .header-right p {
+            font-size: 11px;
+            margin: 2px 0;
+            color: #333;
+        }
+        
+        .header-center {
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .header-center h2 {
+            font-size: 16px;
+            font-weight: 900;
+            color: #000;
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .print-table thead {
+            background-color: #e0e0e0;
+        }
+        
+        .print-table thead th {
+            border: 1px solid #333;
+            padding: 6px 4px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 9px;
+            color: #000;
+            vertical-align: middle;
+        }
+        
+        .print-table tbody tr {
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .print-table tbody tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+        
+        .print-table tbody tr:nth-child(odd) {
+            background-color: white;
+        }
+        
+        .print-table tbody td {
+            border: 1px solid #ccc;
+            padding: 5px 4px;
+            text-align: right;
+            font-size: 9px;
+            color: #000;
+            vertical-align: middle;
+        }
+        
+        .print-table tbody td.center {
+            text-align: center;
+        }
+        
+        .print-table tbody td.serial {
+            text-align: center;
+            font-weight: 700;
+            width: 30px;
+        }
+        
+        .age-cell {
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .age-subheader {
+            display: block;
+            font-size: 7px;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .no-print {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+        
+        .no-print h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .no-print .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .no-print .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .no-print .btn-secondary {
+            background: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Print Controls -->
+    <div class="no-print">
+        <h3><i class="fas fa-print"></i> سجل قيد الطلبة - نسخة للطباعة</h3>
+        <p>يمكنك طباعة هذه الصفحة باستخدام Ctrl+P أو من قائمة المتصفح</p>
+        <button onclick="window.print()" class="btn">
+            <i class="fas fa-print"></i> طباعة
+        </button>
+        <a href="{% url 'student_affairs:student_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> العودة
+        </a>
+    </div>
+    
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="header-top">
+            <div class="header-right">
+                {% if students_with_age.first %}
+                    {% if students_with_age.first.student.governorate %}
+                        <h3>{{ students_with_age.first.student.governorate }}</h3>
+                    {% endif %}
+                    {% if site_settings.administration %}
+                        <p>{{ site_settings.administration }}</p>
+                    {% endif %}
+                    {% if site_settings.school_name %}
+                        <p>{{ site_settings.school_name }}</p>
+                    {% endif %}
+                {% else %}
+                    {% if site_settings.administration %}
+                        <p>{{ site_settings.administration }}</p>
+                    {% endif %}
+                    {% if site_settings.school_name %}
+                        <p>{{ site_settings.school_name }}</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="header-center">
+            {% if students_with_age.first %}
+                {% if students_with_age.first.student.grade and students_with_age.first.student.academic_year %}
+                    <h2>سجل ({{ total_students }}) قيد الطلبة {{ students_with_age.first.student.grade }} للعام الدراسي {{ students_with_age.first.student.academic_year }}</h2>
+                {% else %}
+                    <h2>سجل ({{ total_students }}) قيد الطلبة</h2>
+                {% endif %}
+            {% else %}
+                <h2>سجل قيد الطلبة</h2>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Table Section -->
+    <div class="table-container">
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th style="width: 35px;">م</th>
+                    <th style="width: 80px;">كود الطالب</th>
+                    <th style="width: 150px;">اسم الطالب</th>
+                    <th style="width: 60px;">الديانه</th>
+                    <th style="width: 60px;">التبعيه</th>
+                    <th style="width: 90px;">حالة القيد</th>
+                    <th style="width: 70px;">نوع القيد</th>
+                    <th style="width: 80px;">الشعبه</th>
+                    <th style="width: 60px;">النوع</th>
+                    <th style="width: 90px;">محافظة الميلاد</th>
+                    <th style="width: 80px;">تاريخ الميلاد</th>
+                    <th style="width: 80px;">
+                        السن في
+                        <span style="display: block; font-size: 8px; font-weight: 400;">{{ reference_date|date:"Y/m/d" }}</span>
+                    </th>
+                    <th style="width: 100px;">الرقم القومي</th>
+                    <th style="width: 150px;">المدرسة</th>
+                    <th style="width: 150px;">اسم ولي الامر</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in students_with_age %}
+                <tr>
+                    <td class="serial">{{ forloop.counter }}</td>
+                    <td class="center" style="font-weight: 600;">{{ item.student.student_code }}</td>
+                    <td>{{ item.student.name }}</td>
+                    <td class="center">{{ item.student.get_religion_display_by_gender }}</td>
+                    <td class="center">{{ item.student.get_nationality_display }}</td>
+                    <td class="center">{{ item.student.get_registration_status_display }}</td>
+                    <td class="center">{{ item.student.get_registration_type_display }}</td>
+                    <td class="center">{{ item.student.get_section_display }}</td>
+                    <td class="center">{{ item.student.get_gender_display }}</td>
+                    <td class="center">{{ item.student.birth_governorate }}</td>
+                    <td class="center">{{ item.student.birth_date|date:"Y/m/d" }}</td>
+                    <td class="age-cell">
+                        {% if item.age_at_date %}
+                            {{ item.age_at_date }}
+                        {% else %}
+                            {{ item.student.age }}
+                        {% endif %}
+                    </td>
+                    <td class="center" style="font-family: 'Courier New', monospace;">{{ item.student.national_id }}</td>
+                    <td>{{ item.student.school }}</td>
+                    <td>{{ item.student.guardian_name }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="15" style="text-align: center; padding: 20px; color: #999;">
+                        لا توجد بيانات للعرض
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+

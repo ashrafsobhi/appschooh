@@ -1724,17 +1724,115 @@
             return arabicNamedVoice || null;
         }
         
-        // التحدث بنص معين - محسّن للعامية والكلام الطبيعي
-        function speakText(text) {
-            if (!voiceOutputEnabled || !speechSynthesis) return;
+        // التحدث بنص معين - مع دعم ElevenLabs
+        async function speakText(text) {
+            if (!voiceOutputEnabled) return;
             
             // إيقاف أي صوت قيد التشغيل
-            speechSynthesis.cancel();
+            if (speechSynthesis) {
+                speechSynthesis.cancel();
+            }
             
             // تحسين النص
             const cleanText = improveTextForSpeech(text);
             
             if (!cleanText || cleanText.length < 2) return;
+            
+            // محاولة استخدام Gemini TTS أولاً
+            try {
+                console.log('🔄 محاولة استخدام Gemini TTS...');
+                const ttsUrl = '{% url "student_affairs:text_to_speech_api" %}';
+                console.log('📡 URL:', ttsUrl);
+                
+                const csrfToken = getCookie('csrftoken');
+                console.log('🔑 CSRF Token:', csrfToken ? 'موجود' : 'غير موجود');
+                
+                if (!csrfToken) {
+                    console.error('❌ CSRF Token غير موجود!');
+                    fallbackToWebSpeech(cleanText);
+                    return;
+                }
+                
+                const response = await fetch(ttsUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    credentials: 'same-origin',  // إرسال cookies
+                    body: JSON.stringify({
+                        text: cleanText
+                    })
+                });
+                
+                console.log('📥 Response status:', response.status);
+                
+                // التحقق من حالة الاستجابة
+                if (!response.ok) {
+                    console.error('❌ Response not OK:', response.status, response.statusText);
+                    const errorText = await response.text();
+                    console.error('❌ Error details:', errorText);
+                    fallbackToWebSpeech(cleanText);
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('📦 Response data:', data);
+                
+                if (data.success && data.audio) {
+                    // استخدام Gemini TTS
+                    console.log('✅ نجح Gemini TTS! جاري تشغيل الصوت...');
+                    console.log('📦 Format:', data.format || 'unknown');
+                    
+                    const audio = new Audio(data.audio);
+                    
+                    audio.onplay = function() {
+                        console.log('🔊 بدأ تشغيل الصوت من Gemini TTS');
+                    };
+                    
+                    audio.onended = function() {
+                        console.log('✅ انتهى التحدث (Gemini TTS)');
+                    };
+                    
+                    audio.onerror = function(error) {
+                        console.error('❌ خطأ في تشغيل الصوت من Gemini TTS:', error);
+                        // العودة إلى Web Speech API
+                        fallbackToWebSpeech(cleanText);
+                    };
+                    
+                    audio.play().catch(error => {
+                        console.error('❌ خطأ في تشغيل audio.play():', error);
+                        console.error('❌ تفاصيل:', error.message);
+                        fallbackToWebSpeech(cleanText);
+                    });
+                    
+                    return; // نجح استخدام Gemini TTS
+                } else if (data.use_fallback) {
+                    // Gemini TTS غير متاح، استخدم Web Speech API
+                    console.warn('⚠️ Gemini TTS غير متاح، استخدام Web Speech API');
+                    console.warn('⚠️ السبب:', data.error || 'Unknown');
+                    fallbackToWebSpeech(cleanText);
+                    return;
+                } else {
+                    console.warn('⚠️ استجابة غير متوقعة من Gemini TTS، استخدام Web Speech API');
+                    fallbackToWebSpeech(cleanText);
+                    return;
+                }
+            } catch (error) {
+                console.error('❌ خطأ في الاتصال بـ Gemini TTS:', error);
+                console.error('❌ تفاصيل الخطأ:', error.message);
+                // العودة إلى Web Speech API
+                fallbackToWebSpeech(cleanText);
+                return;
+            }
+        }
+        
+        // دالة احتياطية لاستخدام Web Speech API
+        function fallbackToWebSpeech(cleanText) {
+            if (!speechSynthesis) {
+                console.warn('Web Speech API غير مدعوم');
+                return;
+            }
             
             // تقسيم النص إلى جمل إذا كان طويلاً (لتحسين الجودة)
             const sentences = cleanText.split(/([.!?]+\s*)/).filter(s => s.trim().length > 0);
@@ -1770,7 +1868,7 @@
                 
                 utterance.onstart = function() {
                     if (index === 0) {
-                        console.log('بدأ التحدث');
+                        console.log('بدأ التحدث (Web Speech API)');
                     }
                 };
                 
@@ -1787,7 +1885,7 @@
                     if (index < sentences.length - 1) {
                         setTimeout(() => speakSentence('', index + 1), 150); // فاصل قصير بين الجمل
                     } else {
-                        console.log('انتهى التحدث');
+                        console.log('انتهى التحدث (Web Speech API)');
                     }
                 };
                 

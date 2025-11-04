@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/users/create/', views.admin_create_user, name='admin_create_user'),
     path('admin/users/<int:user_id>/login-link/', views.generate_login_link, name='generate_login_link'),
     path('api/chatbot/', views.chatbot_api, name='chatbot_api'),
+    path('api/text-to-speech/', views.text_to_speech_api, name='text_to_speech_api'),
     path('profile/', views.profile, name='profile'),
 ]
 

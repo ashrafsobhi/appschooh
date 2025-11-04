@@ -3,75 +3,180 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>نظام شؤون الطلبة - الصفحة الرئيسية</title>
+  <title>نظام شؤون الطلبة المتكامل - إدارة ذكية لشؤون الطلاب</title>
+  <meta name="description" content="نظام متكامل لإدارة شؤون الطلبة، الفصول الدراسية، السجلات، والإحصائيات مع واجهة احترافية وأدوات متقدمة">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
       background: #f8f9fa;
       overflow-x: hidden;
+      line-height: 1.8;
     }
     
-    /* Navigation */
+    /* Navigation - تحسين احترافي مع Active State */
     .navbar-custom {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(15px);
-      box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-      padding: 1rem 0;
-      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      padding: 1.2rem 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       position: fixed;
       top: 0;
       width: 100%;
       z-index: 1000;
+      border-bottom: 1px solid rgba(102, 126, 234, 0.1);
     }
     .navbar-custom.scrolled {
-      padding: 0.5rem 0;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+      padding: 0.8rem 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      background: rgba(255, 255, 255, 0.98);
     }
     .navbar-brand {
       font-weight: 900;
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .navbar-brand i {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       font-size: 1.6rem;
-      color: #667eea !important;
       transition: transform 0.3s ease;
     }
     .navbar-brand:hover {
       transform: scale(1.05);
     }
-    .nav-link {
-      font-weight: 600;
-      color: #212529 !important;
-      margin: 0 0.5rem;
-      transition: all 0.3s ease;
+    .navbar-brand:hover i {
+      transform: rotate(15deg) scale(1.1);
+    }
+    
+    /* Nav Links - تحسين كبير */
+    .navbar-nav {
       position: relative;
     }
+    .nav-link {
+      font-weight: 600;
+      color: #2d3748 !important;
+      margin: 0 0.3rem;
+      padding: 0.65rem 1.2rem !important;
+      border-radius: 12px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      font-size: 1rem;
+      overflow: hidden;
+    }
+    
+    /* Active State Indicator */
     .nav-link::after {
       content: '';
       position: absolute;
       bottom: 0;
-      right: 0;
-      width: 0;
-      height: 2px;
-      background: #667eea;
-      transition: width 0.3s ease;
-    }
-    .nav-link:hover::after {
-      width: 100%;
+      right: 50%;
+      transform: translateX(50%) scaleX(0);
+      width: 80%;
+      height: 3px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 10px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
     }
     
-    /* Hero Section */
+    /* Active State */
+    .nav-link.active {
+      color: #667eea !important;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      font-weight: 700;
+    }
+    .nav-link.active::after {
+      transform: translateX(50%) scaleX(1);
+      opacity: 1;
+    }
+    
+    /* Hover Effect */
+    .nav-link:hover:not(.active):not(.btn-primary-gradient) {
+      color: #667eea !important;
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+    .nav-link:hover::after {
+      transform: translateX(50%) scaleX(1);
+      opacity: 0.6;
+    }
+    
+    /* Login Button */
+    .nav-link.btn-primary-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff !important;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      margin-right: 1rem;
+      padding: 0.7rem 1.8rem !important;
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-link.btn-primary-gradient::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s ease;
+    }
+    .nav-link.btn-primary-gradient::after {
+      display: none;
+    }
+    .nav-link.btn-primary-gradient:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    .nav-link.btn-primary-gradient:hover::before {
+      left: 100%;
+    }
+    
+    /* Mobile Menu */
+    .navbar-toggler {
+      border: none;
+      padding: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    .navbar-toggler:focus {
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+    
+    /* Hero Section - تحسين */
     .hero-section {
       min-height: 100vh;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
       background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
+      animation: gradientShift 20s ease infinite;
       position: relative;
       overflow: hidden;
       display: flex;
       align-items: center;
-      padding: 120px 0 80px;
+      padding: 140px 0 100px;
     }
     @keyframes gradientShift {
       0%, 100% { background-position: 0% 50%; }
@@ -82,40 +187,40 @@
       content: '';
       position: absolute;
       border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.3;
-      animation: float 20s infinite ease-in-out;
+      filter: blur(100px);
+      opacity: 0.25;
+      animation: float 25s infinite ease-in-out;
     }
     .hero-section::before {
-      width: 500px;
-      height: 500px;
+      width: 600px;
+      height: 600px;
       background: rgba(255,255,255,0.2);
-      top: -250px;
-      right: -250px;
+      top: -300px;
+      right: -300px;
       animation-delay: 0s;
     }
     .hero-section::after {
-      width: 400px;
-      height: 400px;
+      width: 500px;
+      height: 500px;
       background: rgba(255,255,255,0.15);
-      bottom: -200px;
-      left: -200px;
-      animation-delay: 5s;
+      bottom: -250px;
+      left: -250px;
+      animation-delay: 8s;
     }
     @keyframes float {
       0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      50% { transform: translate(-50px, -50px) rotate(180deg); }
+      50% { transform: translate(-80px, -80px) rotate(180deg); }
     }
     .hero-content {
       position: relative;
       z-index: 2;
       color: #fff;
-      animation: fadeInUp 1s ease-out;
+      animation: fadeInUp 1.2s ease-out;
     }
     @keyframes fadeInUp {
       from {
         opacity: 0;
-        transform: translateY(50px);
+        transform: translateY(60px);
       }
       to {
         opacity: 1;
@@ -123,17 +228,17 @@
       }
     }
     .hero-title {
-      font-size: 4rem;
+      font-size: 4.5rem;
       font-weight: 900;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       line-height: 1.2;
-      text-shadow: 0 4px 30px rgba(0,0,0,0.3);
-      animation: slideInLeft 1s ease-out 0.2s both;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.3);
+      animation: slideInLeft 1s ease-out 0.3s both;
     }
     @keyframes slideInLeft {
       from {
         opacity: 0;
-        transform: translateX(-50px);
+        transform: translateX(-80px);
       }
       to {
         opacity: 1;
@@ -141,16 +246,17 @@
       }
     }
     .hero-subtitle {
-      font-size: 1.4rem;
-      margin-bottom: 2.5rem;
+      font-size: 1.5rem;
+      margin-bottom: 3rem;
       opacity: 0.95;
-      line-height: 1.8;
-      animation: slideInRight 1s ease-out 0.4s both;
+      line-height: 2;
+      animation: slideInRight 1s ease-out 0.5s both;
+      font-weight: 400;
     }
     @keyframes slideInRight {
       from {
         opacity: 0;
-        transform: translateX(50px);
+        transform: translateX(80px);
       }
       to {
         opacity: 1;
@@ -158,27 +264,28 @@
       }
     }
     .hero-buttons {
-      animation: fadeIn 1s ease-out 0.6s both;
+      animation: fadeIn 1s ease-out 0.7s both;
     }
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
     .hero-buttons .btn {
-      padding: 16px 40px;
-      font-size: 1.15rem;
+      padding: 18px 45px;
+      font-size: 1.2rem;
       font-weight: 700;
       border-radius: 50px;
       margin: 0 15px 15px 0;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
     .btn-primary-gradient {
       background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
       border: none;
       color: #fff;
-      box-shadow: 0 10px 30px rgba(0, 114, 255, 0.4);
+      box-shadow: 0 12px 35px rgba(0, 114, 255, 0.4);
     }
     .btn-primary-gradient::before {
       content: '';
@@ -188,64 +295,70 @@
       width: 100%;
       height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      transition: left 0.5s ease;
+      transition: left 0.6s ease;
     }
     .btn-primary-gradient:hover::before {
       left: 100%;
     }
     .btn-primary-gradient:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 15px 40px rgba(0, 114, 255, 0.5);
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 18px 50px rgba(0, 114, 255, 0.5);
     }
     .btn-outline-light-custom {
-      border: 2px solid rgba(255,255,255,0.9);
+      border: 3px solid rgba(255,255,255,0.95);
       color: #fff;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.15);
       backdrop-filter: blur(10px);
     }
     .btn-outline-light-custom:hover {
-      background: rgba(255,255,255,0.25);
-      transform: translateY(-5px) scale(1.05);
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-8px) scale(1.05);
       border-color: #fff;
+      color: #fff;
     }
     .hero-image {
       position: relative;
       z-index: 2;
-      animation: floatImage 3s ease-in-out infinite;
+      animation: floatImage 4s ease-in-out infinite;
     }
     @keyframes floatImage {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(5deg); }
     }
     
     /* Features Section */
     .features-section {
-      padding: 100px 0;
+      padding: 120px 0;
       background: #fff;
       position: relative;
     }
     .section-title {
-      font-size: 3rem;
+      font-size: 3.5rem;
       font-weight: 900;
       color: #212529;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       text-align: center;
       opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.8s ease;
+      transform: translateY(40px);
+      transition: all 1s ease;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .section-title.animate {
       opacity: 1;
       transform: translateY(0);
     }
     .section-subtitle {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       color: #6c757d;
       text-align: center;
-      margin-bottom: 4rem;
+      margin-bottom: 5rem;
       opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.8s ease 0.2s;
+      transform: translateY(40px);
+      transition: all 1s ease 0.2s;
+      font-weight: 400;
     }
     .section-subtitle.animate {
       opacity: 1;
@@ -253,15 +366,15 @@
     }
     .feature-card {
       background: #fff;
-      border-radius: 25px;
-      padding: 3rem 2.5rem;
+      border-radius: 30px;
+      padding: 3.5rem 2.5rem;
       height: 100%;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      border: 1px solid #e9ecef;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 2px solid #f0f0f0;
       text-align: center;
       opacity: 0;
-      transform: translateY(50px);
+      transform: translateY(60px) scale(0.95);
       position: relative;
       overflow: hidden;
     }
@@ -272,46 +385,49 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
-      transition: left 0.5s ease;
+      background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.08), transparent);
+      transition: left 0.6s ease;
     }
     .feature-card:hover::before {
       left: 100%;
     }
     .feature-card.animate {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
     .feature-card:hover {
-      transform: translateY(-15px) scale(1.02);
-      box-shadow: 0 25px 70px rgba(102, 126, 234, 0.25);
+      transform: translateY(-20px) scale(1.03);
+      box-shadow: 0 30px 80px rgba(102, 126, 234, 0.25);
+      border-color: #667eea;
     }
     .feature-icon {
-      font-size: 4rem;
-      color: #667eea;
-      margin-bottom: 1.5rem;
-      transition: all 0.3s ease;
+      font-size: 4.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.8rem;
+      transition: all 0.4s ease;
       display: inline-block;
     }
     .feature-card:hover .feature-icon {
-      transform: scale(1.2) rotate(5deg);
-      color: #764ba2;
+      transform: scale(1.25) rotate(10deg);
     }
     .feature-title {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       font-weight: 700;
       color: #212529;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
     }
     .feature-description {
       color: #6c757d;
-      line-height: 1.8;
-      font-size: 1.05rem;
+      line-height: 1.9;
+      font-size: 1.1rem;
     }
     
-    /* Stats Section */
+    /* Stats Section - مع إحصائيات حقيقية */
     .stats-section {
-      padding: 100px 0;
+      padding: 120px 0;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
       position: relative;
@@ -325,8 +441,8 @@
       width: 100%;
       height: 100%;
       background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
-      opacity: 0.3;
-      animation: moveBackground 20s linear infinite;
+      opacity: 0.4;
+      animation: moveBackground 25s linear infinite;
     }
     @keyframes moveBackground {
       from { transform: translate(0, 0); }
@@ -334,109 +450,253 @@
     }
     .stat-item {
       text-align: center;
-      padding: 2rem;
+      padding: 2.5rem;
       opacity: 0;
-      transform: scale(0.8);
-      transition: all 0.6s ease;
+      transform: scale(0.8) translateY(30px);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
     }
     .stat-item.animate {
       opacity: 1;
-      transform: scale(1);
+      transform: scale(1) translateY(0);
     }
     .stat-number {
-      font-size: 4rem;
+      font-size: 4.5rem;
       font-weight: 900;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+      margin-bottom: 0.8rem;
+      text-shadow: 0 4px 25px rgba(0,0,0,0.3);
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.9) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      display: block;
+      animation: countUp 2s ease-out;
+    }
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .stat-label {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       opacity: 0.95;
+      font-weight: 600;
     }
     
-    /* How It Works */
+    /* How It Works - تحسين */
     .how-it-works {
-      padding: 100px 0;
+      padding: 120px 0;
       background: linear-gradient(180deg, #f8f9fa 0%, #fff 100%);
       position: relative;
     }
     .step-card {
       background: #fff;
-      border-radius: 25px;
-      padding: 3rem 2rem;
+      border-radius: 30px;
+      padding: 3.5rem 2.5rem;
       text-align: center;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      box-shadow: 0 15px 50px rgba(0,0,0,0.08);
       position: relative;
       margin-bottom: 2rem;
-      transition: all 0.4s ease;
+      transition: all 0.5s ease;
       opacity: 0;
-      transform: translateY(50px);
+      transform: translateY(60px);
       border: 2px solid transparent;
+      height: 100%;
     }
     .step-card.animate {
       opacity: 1;
       transform: translateY(0);
     }
     .step-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2);
+      transform: translateY(-15px);
+      box-shadow: 0 25px 70px rgba(102, 126, 234, 0.25);
       border-color: #667eea;
     }
     .step-number {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       font-weight: 900;
-      margin: 0 auto 1.5rem;
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-      transition: all 0.3s ease;
+      margin: 0 auto 2rem;
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.35);
+      transition: all 0.4s ease;
+      position: relative;
+    }
+    .step-number::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      opacity: 0.3;
+      animation: pulse-ring 2s ease-out infinite;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 0.3; }
+      100% { transform: scale(1.5); opacity: 0; }
     }
     .step-card:hover .step-number {
-      transform: scale(1.1) rotate(360deg);
+      transform: scale(1.15) rotate(360deg);
+    }
+    .step-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      color: #212529;
+    }
+    .step-description {
+      color: #6c757d;
+      line-height: 1.9;
+      font-size: 1.1rem;
     }
     
-    /* Additional Content Section */
-    .benefits-section {
-      padding: 100px 0;
+    /* Detailed Features Section - جديد */
+    .detailed-features {
+      padding: 120px 0;
       background: #fff;
     }
-    .benefit-item {
-      padding: 2rem;
-      text-align: center;
+    .feature-detail-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+      border-radius: 25px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+      border-right: 5px solid #667eea;
+      transition: all 0.4s ease;
       opacity: 0;
-      transform: translateX(-30px);
-      transition: all 0.6s ease;
+      transform: translateX(-50px);
+    }
+    .feature-detail-card.animate {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .feature-detail-card:hover {
+      transform: translateX(10px);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.15);
+    }
+    .feature-detail-icon {
+      font-size: 3rem;
+      color: #667eea;
+      margin-bottom: 1.5rem;
+    }
+    .feature-detail-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #212529;
+      margin-bottom: 1rem;
+    }
+    .feature-detail-list {
+      list-style: none;
+      padding: 0;
+    }
+    .feature-detail-list li {
+      padding: 0.8rem 0;
+      color: #6c757d;
+      font-size: 1.05rem;
+      position: relative;
+      padding-right: 2rem;
+    }
+    .feature-detail-list li::before {
+      content: '✓';
+      position: absolute;
+      right: 0;
+      color: #667eea;
+      font-weight: 900;
+      font-size: 1.2rem;
+    }
+    
+    /* Benefits Section */
+    .benefits-section {
+      padding: 120px 0;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    .benefit-item {
+      padding: 2.5rem;
+      text-align: center;
+      background: #fff;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      transition: all 0.4s ease;
+      opacity: 0;
+      transform: translateX(-40px);
+      height: 100%;
     }
     .benefit-item.animate {
       opacity: 1;
       transform: translateX(0);
     }
+    .benefit-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(102, 126, 234, 0.15);
+    }
     .benefit-icon {
-      font-size: 3rem;
-      color: #667eea;
-      margin-bottom: 1rem;
-      animation: pulse 2s ease-in-out infinite;
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+      animation: pulse 2.5s ease-in-out infinite;
+      display: inline-block;
     }
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
+      50% { transform: scale(1.15); }
+    }
+    .benefit-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #212529;
+    }
+    .benefit-description {
+      color: #6c757d;
+      line-height: 1.9;
+      font-size: 1.05rem;
+    }
+    
+    /* System Overview Section - جديد */
+    .system-overview {
+      padding: 120px 0;
+      background: #fff;
+    }
+    .overview-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 30px;
+      padding: 4rem;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 3rem;
+      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.8s ease;
+    }
+    .overview-card.animate {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .overview-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+    }
+    .overview-text {
+      font-size: 1.3rem;
+      line-height: 2;
+      opacity: 0.95;
     }
     
     /* Footer */
     .footer-custom {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
-      padding: 4rem 0 2rem;
+      padding: 5rem 0 2rem;
       text-align: center;
       position: relative;
     }
@@ -446,7 +706,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 1px;
+      height: 2px;
       background: linear-gradient(90deg, transparent, #667eea, transparent);
     }
     .footer-custom a {
@@ -459,9 +719,9 @@
       transform: translateY(-2px);
     }
     .developer-info {
-      font-size: 1.1rem;
-      margin-top: 1.5rem;
-      line-height: 2;
+      font-size: 1.2rem;
+      margin-top: 2rem;
+      line-height: 2.5;
     }
     
     /* Floating Particles */
@@ -476,21 +736,22 @@
     }
     .particle {
       position: absolute;
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba(102, 126, 234, 0.15);
       border-radius: 50%;
-      animation: particleFloat 20s infinite ease-in-out;
+      animation: particleFloat 25s infinite ease-in-out;
     }
     @keyframes particleFloat {
-      0%, 100% { transform: translate(0, 0); }
-      33% { transform: translate(100px, -100px); }
-      66% { transform: translate(-100px, 100px); }
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(120px, -120px) rotate(120deg); }
+      66% { transform: translate(-120px, 120px) rotate(240deg); }
     }
     
     @media (max-width: 768px) {
-      .hero-title { font-size: 2.5rem; }
-      .hero-subtitle { font-size: 1.1rem; }
-      .section-title { font-size: 2rem; }
-      .stat-number { font-size: 2.5rem; }
+      .hero-title { font-size: 2.8rem; }
+      .hero-subtitle { font-size: 1.2rem; }
+      .section-title { font-size: 2.5rem; }
+      .stat-number { font-size: 3rem; }
+      .nav-link.btn-primary-gradient { margin-right: 0; margin-top: 0.5rem; }
     }
   </style>
 </head>
@@ -502,13 +763,17 @@
   <nav class="navbar navbar-expand-lg navbar-custom fixed-top" id="navbar">
     <div class="container">
       <a class="navbar-brand" href="/">
-        <i class="fas fa-graduation-cap"></i> نظام شؤون الطلبة
+        <i class="fas fa-graduation-cap"></i>
+        <span>نظام شؤون الطلبة</span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item">
+            <a class="nav-link" href="#home">الرئيسية</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="#features">المميزات</a>
           </li>
@@ -516,10 +781,13 @@
             <a class="nav-link" href="#how-it-works">كيف يعمل</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="#system-overview">عن النظام</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="#benefits">الفوائد</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link btn btn-primary-gradient ms-2 text-white" href="/accounts/login/">
+            <a class="nav-link btn-primary-gradient" href="/accounts/login/">
               <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
             </a>
           </li>
@@ -529,13 +797,13 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="hero-section">
+  <section id="home" class="hero-section">
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6 hero-content">
           <h1 class="hero-title">نظام إدارة شؤون الطلبة المتكامل</h1>
           <p class="hero-subtitle">
-            حل شامل ومتطور لإدارة سجلات الطلبة، الفصول الدراسية، والإحصائيات مع واجهة احترافية وسهلة الاستخدام. نظام متكامل يوفر جميع الأدوات التي تحتاجها لإدارة شؤون الطلبة بكفاءة عالية.
+            حل شامل ومتطور لإدارة سجلات الطلبة، الفصول الدراسية، والإحصائيات مع واجهة احترافية وسهلة الاستخدام. نظام متكامل يوفر جميع الأدوات التي تحتاجها لإدارة شؤون الطلبة بكفاءة عالية ودقة متناهية.
           </p>
           <div class="hero-buttons">
             <a href="/accounts/login/" class="btn btn-primary-gradient">
@@ -547,7 +815,31 @@
           </div>
         </div>
         <div class="col-lg-6 text-center mt-5 mt-lg-0 hero-image">
-          <i class="fas fa-chart-line" style="font-size: 250px; opacity: 0.2; color: rgba(255,255,255,0.6);"></i>
+          <i class="fas fa-chart-line" style="font-size: 300px; opacity: 0.25; color: rgba(255,255,255,0.7);"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section - مع إحصائيات حقيقية -->
+  <section id="stats" class="stats-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 col-6 stat-item" data-delay="0">
+          <div class="stat-number" data-count="{{ total_students|default:0 }}">{{ total_students|default:0 }}</div>
+          <div class="stat-label">إجمالي الطلبة</div>
+        </div>
+        <div class="col-md-3 col-6 stat-item" data-delay="200">
+          <div class="stat-number" data-count="{{ total_classrooms|default:0 }}">{{ total_classrooms|default:0 }}</div>
+          <div class="stat-label">عدد الفصول</div>
+        </div>
+        <div class="col-md-3 col-6 stat-item" data-delay="400">
+          <div class="stat-number" data-count="{{ active_students|default:0 }}">{{ active_students|default:0 }}</div>
+          <div class="stat-label">طلبة ناجحين</div>
+        </div>
+        <div class="col-md-3 col-6 stat-item" data-delay="600">
+          <div class="stat-number" data-count="{{ male_students|default:0 }}">{{ male_students|default:0 }}</div>
+          <div class="stat-label">طلبة ذكور</div>
         </div>
       </div>
     </div>
@@ -557,7 +849,7 @@
   <section id="features" class="features-section">
     <div class="container">
       <h2 class="section-title">المميزات الرئيسية</h2>
-      <p class="section-subtitle">نظام متكامل يوفر جميع الأدوات التي تحتاجها لإدارة شؤون الطلبة بكفاءة</p>
+      <p class="section-subtitle">نظام متكامل يوفر جميع الأدوات التي تحتاجها لإدارة شؤون الطلبة بكفاءة عالية</p>
       
       <div class="row g-4">
         <div class="col-md-6 col-lg-4">
@@ -567,7 +859,7 @@
             </div>
             <h3 class="feature-title">إدارة الطلبة</h3>
             <p class="feature-description">
-              إدارة شاملة لجميع بيانات الطلبة مع إمكانية البحث والتصفية المتقدمة، وتصنيف الطلبة حسب الصفوف والفصول. نظام ذكي يسهل الوصول إلى المعلومات بسرعة.
+              إدارة شاملة لجميع بيانات الطلبة مع إمكانية البحث والتصفية المتقدمة، وتصنيف الطلبة حسب الصفوف والفصول. نظام ذكي يسهل الوصول إلى المعلومات بسرعة ودقة عالية.
             </p>
           </div>
         </div>
@@ -579,7 +871,7 @@
             </div>
             <h3 class="feature-title">إدارة الفصول</h3>
             <p class="feature-description">
-              تنظيم الفصول الدراسية بسهولة مع إمكانية طباعة قوائم الطلبة وقوائم الغياب بتصميم احترافي. إدارة متكاملة لجميع الفصول الدراسية.
+              تنظيم الفصول الدراسية بسهولة مع إمكانية طباعة قوائم الطلبة وقوائم الغياب بتصميم احترافي. إدارة متكاملة لجميع الفصول الدراسية مع تتبع المقاعد والطاقة الاستيعابية.
             </p>
           </div>
         </div>
@@ -591,7 +883,7 @@
             </div>
             <h3 class="feature-title">السجلات والملفات</h3>
             <p class="feature-description">
-              حفظ وإدارة جميع سجلات الطلبة مع إمكانية رفع المرفقات والوثائق والطباعة بتصميم رسمي معتمد. نظام أرشفة متقدم.
+              حفظ وإدارة جميع سجلات الطلبة مع إمكانية رفع المرفقات والوثائق والطباعة بتصميم رسمي معتمد. نظام أرشفة متقدم مع بحث ذكي في جميع السجلات.
             </p>
           </div>
         </div>
@@ -603,7 +895,7 @@
             </div>
             <h3 class="feature-title">الإحصائيات والتقارير</h3>
             <p class="feature-description">
-              إحصائيات مفصلة مع رسوم بيانية تفاعلية لتتبع أداء الطلبة والفصول والتقارير الشاملة. تحليلات ذكية للبيانات.
+              إحصائيات مفصلة مع رسوم بيانية تفاعلية لتتبع أداء الطلبة والفصول والتقارير الشاملة. تحليلات ذكية للبيانات مع إمكانية تصدير التقارير بصيغ مختلفة.
             </p>
           </div>
         </div>
@@ -615,7 +907,7 @@
             </div>
             <h3 class="feature-title">الطباعة الاحترافية</h3>
             <p class="feature-description">
-              طباعة قوائم الطلبة، البطاقات الشخصية، قوائم الغياب، والسجلات بتصميم احترافي ومطابق للمعايير الرسمية. جودة طباعة عالية.
+              طباعة قوائم الطلبة، البطاقات الشخصية، قوائم الغياب، والسجلات بتصميم احترافي ومطابق للمعايير الرسمية. جودة طباعة عالية مع تنسيق احترافي.
             </p>
           </div>
         </div>
@@ -627,7 +919,7 @@
             </div>
             <h3 class="feature-title">الأمان والخصوصية</h3>
             <p class="feature-description">
-              نظام آمن مع إدارة صلاحيات متقدمة لحماية البيانات الحساسة وضمان خصوصية معلومات الطلبة. تشفير متقدم للبيانات.
+              نظام آمن مع إدارة صلاحيات متقدمة لحماية البيانات الحساسة وضمان خصوصية معلومات الطلبة. تشفير متقدم للبيانات مع نسخ احتياطية تلقائية.
             </p>
           </div>
         </div>
@@ -635,25 +927,79 @@
     </div>
   </section>
 
-  <!-- Stats Section -->
-  <section class="stats-section">
+  <!-- Detailed Features Section -->
+  <section class="detailed-features">
     <div class="container">
+      <h2 class="section-title">مميزات تفصيلية</h2>
+      <p class="section-subtitle">تعرف على جميع الميزات المتقدمة التي يوفرها النظام</p>
+      
       <div class="row">
-        <div class="col-md-3 col-6 stat-item" data-delay="0">
-          <div class="stat-number">100%</div>
-          <div class="stat-label">آمن وموثوق</div>
+        <div class="col-lg-6">
+          <div class="feature-detail-card" data-delay="0">
+            <div class="feature-detail-icon">
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <h4 class="feature-detail-title">إدارة بيانات الطلبة</h4>
+            <ul class="feature-detail-list">
+              <li>إضافة وتعديل بيانات الطلبة بشكل سريع وسهل</li>
+              <li>استيراد البيانات من ملفات Excel</li>
+              <li>البحث المتقدم في جميع البيانات</li>
+              <li>تصنيف الطلبة حسب الصفوف والجنس</li>
+              <li>إدارة المرفقات والوثائق</li>
+              <li>طباعة البطاقات الشخصية والكروت</li>
+            </ul>
+          </div>
         </div>
-        <div class="col-md-3 col-6 stat-item" data-delay="200">
-          <div class="stat-number">24/7</div>
-          <div class="stat-label">متاح دائماً</div>
+        
+        <div class="col-lg-6">
+          <div class="feature-detail-card" data-delay="200">
+            <div class="feature-detail-icon">
+              <i class="fas fa-door-open"></i>
+            </div>
+            <h4 class="feature-detail-title">إدارة الفصول الدراسية</h4>
+            <ul class="feature-detail-list">
+              <li>إنشاء وتنظيم الفصول الدراسية</li>
+              <li>توزيع الطلبة على المقاعد</li>
+              <li>تتبع الطاقة الاستيعابية للفصول</li>
+              <li>طباعة قوائم الطلبة حسب الفصل</li>
+              <li>طباعة قوائم الغياب</li>
+              <li>إحصائيات مفصلة لكل فصل</li>
+            </ul>
+          </div>
         </div>
-        <div class="col-md-3 col-6 stat-item" data-delay="400">
-          <div class="stat-number">سهل</div>
-          <div class="stat-label">الاستخدام</div>
+        
+        <div class="col-lg-6">
+          <div class="feature-detail-card" data-delay="400">
+            <div class="feature-detail-icon">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <h4 class="feature-detail-title">السجلات والملفات</h4>
+            <ul class="feature-detail-list">
+              <li>حفظ جميع سجلات الطلبة بشكل منظم</li>
+              <li>رفع وإدارة المرفقات والوثائق</li>
+              <li>البحث في السجلات بسهولة</li>
+              <li>طباعة السجلات بتصميم رسمي</li>
+              <li>أرشفة السجلات القديمة</li>
+              <li>تصدير البيانات بصيغ مختلفة</li>
+            </ul>
+          </div>
         </div>
-        <div class="col-md-3 col-6 stat-item" data-delay="600">
-          <div class="stat-number">متكامل</div>
-          <div class="stat-label">جميع الميزات</div>
+        
+        <div class="col-lg-6">
+          <div class="feature-detail-card" data-delay="600">
+            <div class="feature-detail-icon">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <h4 class="feature-detail-title">الإحصائيات والتقارير</h4>
+            <ul class="feature-detail-list">
+              <li>إحصائيات شاملة لجميع الطلبة</li>
+              <li>رسوم بيانية تفاعلية</li>
+              <li>تقارير مفصلة حسب الصفوف</li>
+              <li>إحصائيات النجاح والرسوب</li>
+              <li>تقارير حسب الجنس والديانة</li>
+              <li>تصدير التقارير بصيغ مختلفة</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -663,32 +1009,54 @@
   <section id="how-it-works" class="how-it-works">
     <div class="container">
       <h2 class="section-title">كيف يعمل النظام</h2>
-      <p class="section-subtitle">خطوات بسيطة للبدء في استخدام النظام</p>
+      <p class="section-subtitle">خطوات بسيطة وسهلة للبدء في استخدام النظام</p>
       
       <div class="row g-4">
         <div class="col-md-4">
           <div class="step-card" data-delay="0">
             <div class="step-number">1</div>
-            <h4 style="font-weight: 700; margin-bottom: 1rem;">تسجيل الدخول</h4>
-            <p style="color: #6c757d; line-height: 1.8;">قم بتسجيل الدخول باستخدام بياناتك المخصصة للوصول إلى لوحة التحكم. واجهة سهلة وآمنة للوصول السريع.</p>
+            <h4 class="step-title">تسجيل الدخول</h4>
+            <p class="step-description">
+              قم بتسجيل الدخول باستخدام بياناتك المخصصة للوصول إلى لوحة التحكم. واجهة سهلة وآمنة للوصول السريع إلى جميع الميزات.
+            </p>
           </div>
         </div>
         
         <div class="col-md-4">
           <div class="step-card" data-delay="200">
             <div class="step-number">2</div>
-            <h4 style="font-weight: 700; margin-bottom: 1rem;">إضافة البيانات</h4>
-            <p style="color: #6c757d; line-height: 1.8;">ابدأ بإضافة بيانات الطلبة والفصول الدراسية أو استيرادها من ملف Excel. عملية سريعة وبسيطة.</p>
+            <h4 class="step-title">إضافة البيانات</h4>
+            <p class="step-description">
+              ابدأ بإضافة بيانات الطلبة والفصول الدراسية يدوياً أو استيرادها من ملف Excel. عملية سريعة وبسيطة مع دعم الاستيراد الجماعي.
+            </p>
           </div>
         </div>
         
         <div class="col-md-4">
           <div class="step-card" data-delay="400">
             <div class="step-number">3</div>
-            <h4 style="font-weight: 700; margin-bottom: 1rem;">إدارة وتتبع</h4>
-            <p style="color: #6c757d; line-height: 1.8;">استخدم أدوات الإدارة والإحصائيات لتتبع أداء الطلبة وطباعة التقارير. تحكم كامل في البيانات.</p>
+            <h4 class="step-title">إدارة وتتبع</h4>
+            <p class="step-description">
+              استخدم أدوات الإدارة والإحصائيات لتتبع أداء الطلبة وطباعة التقارير. تحكم كامل في البيانات مع واجهة سهلة الاستخدام.
+            </p>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- System Overview Section -->
+  <section id="system-overview" class="system-overview">
+    <div class="container">
+      <div class="overview-card" data-delay="0">
+        <h3 class="overview-title">نظام متكامل لإدارة شؤون الطلبة</h3>
+        <p class="overview-text">
+          نظام شؤون الطلبة هو حل شامل ومتطور مصمم خصيصاً لإدارة جميع جوانب شؤون الطلبة في المؤسسات التعليمية. يوفر النظام مجموعة متكاملة من الأدوات التي تمكن من إدارة بيانات الطلبة، الفصول الدراسية، السجلات، والإحصائيات بشكل فعال ومنظم.
+          <br><br>
+          يتميز النظام بواجهة مستخدم احترافية وسهلة الاستخدام، مع دعم كامل للغة العربية وتصميم متجاوب يعمل على جميع الأجهزة. النظام يوفر أدوات متقدمة للبحث والتصفية، مع إمكانية الاستيراد والتصدير للبيانات، وطباعة احترافية للتقارير والوثائق.
+          <br><br>
+          بالإضافة إلى ذلك، يتضمن النظام نظام أمان متقدم مع إدارة صلاحيات دقيقة، وتشفير للبيانات الحساسة، ونسخ احتياطية تلقائية. كما يوفر النظام إحصائيات مفصلة مع رسوم بيانية تفاعلية لمساعدتك في اتخاذ القرارات المستندة إلى البيانات.
+        </p>
       </div>
     </div>
   </section>
@@ -703,22 +1071,22 @@
         <div class="col-md-4">
           <div class="benefit-item" data-delay="0">
             <div class="benefit-icon"><i class="fas fa-rocket"></i></div>
-            <h4 style="font-weight: 700; margin-bottom: 1rem;">أداء سريع</h4>
-            <p style="color: #6c757d;">نظام سريع ومحسّن يوفر تجربة مستخدم سلسة وسريعة</p>
+            <h4 class="benefit-title">أداء سريع</h4>
+            <p class="benefit-description">نظام سريع ومحسّن يوفر تجربة مستخدم سلسة وسريعة مع استجابة فورية</p>
           </div>
         </div>
         <div class="col-md-4">
           <div class="benefit-item" data-delay="200">
             <div class="benefit-icon"><i class="fas fa-mobile-alt"></i></div>
-            <h4 style="font-weight: 700; margin-bottom: 1rem;">متجاوب</h4>
-            <p style="color: #6c757d;">يعمل بشكل مثالي على جميع الأجهزة والشاشات المختلفة</p>
+            <h4 class="benefit-title">متجاوب</h4>
+            <p class="benefit-description">يعمل بشكل مثالي على جميع الأجهزة والشاشات المختلفة من الحاسوب إلى الهاتف</p>
           </div>
         </div>
         <div class="col-md-4">
           <div class="benefit-item" data-delay="400">
             <div class="benefit-icon"><i class="fas fa-headset"></i></div>
-            <h4 style="font-weight: 700; margin-bottom: 1rem;">دعم فني</h4>
-            <p style="color: #6c757d;">فريق دعم فني متاح لمساعدتك في أي وقت تحتاجه</p>
+            <h4 class="benefit-title">دعم فني</h4>
+            <p class="benefit-description">فريق دعم فني متاح لمساعدتك في أي وقت تحتاجه مع تحديثات مستمرة</p>
           </div>
         </div>
       </div>
@@ -730,9 +1098,9 @@
     <div class="container">
       <div class="row">
         <div class="col-12">
-          <h5 style="font-weight: 700; margin-bottom: 1.5rem; font-size: 1.5rem;">تم التطوير بواسطة</h5>
+          <h5 style="font-weight: 700; margin-bottom: 2rem; font-size: 1.8rem;">تم التطوير بواسطة</h5>
           <div class="developer-info">
-            <p><strong style="font-size: 1.2rem;">أشرف صبحي</strong></p>
+            <p><strong style="font-size: 1.4rem;">أشرف صبحي</strong></p>
             <p>
               <i class="fas fa-phone"></i> الهواتف: 
               <a href="tel:01090183430">01090183430</a> - 
@@ -756,15 +1124,15 @@
   <script>
     // Create floating particles
     const particlesContainer = document.getElementById('particles');
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 30; i++) {
       const particle = document.createElement('div');
       particle.className = 'particle';
-      particle.style.width = Math.random() * 10 + 5 + 'px';
+      particle.style.width = Math.random() * 15 + 5 + 'px';
       particle.style.height = particle.style.width;
       particle.style.left = Math.random() * 100 + '%';
       particle.style.top = Math.random() * 100 + '%';
-      particle.style.animationDelay = Math.random() * 20 + 's';
-      particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+      particle.style.animationDelay = Math.random() * 25 + 's';
+      particle.style.animationDuration = (Math.random() * 15 + 20) + 's';
       particlesContainer.appendChild(particle);
     }
 
@@ -776,28 +1144,80 @@
       } else {
         navbar.classList.remove('scrolled');
       }
+      
+      // Update active nav link based on scroll position
+      updateActiveNavLink();
+    });
+    
+    // Function to update active nav link
+    function updateActiveNavLink() {
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('.navbar-nav .nav-link[href^="#"]');
+      
+      let currentSection = '';
+      const scrollPosition = window.scrollY + 150; // Offset for navbar height
+      
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const sectionId = section.getAttribute('id');
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+          currentSection = sectionId;
+        }
+      });
+      
+      // If at top of page, don't highlight any section
+      if (window.scrollY < 100) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+        });
+        return;
+      }
+      
+      // Update active state
+      navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === `#${currentSection}`) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+    
+    // Update active nav link on page load
+    updateActiveNavLink();
+    
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+        if (navbarCollapse.classList.contains('show')) {
+          const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+            toggle: false
+          });
+          bsCollapse.hide();
+        }
+      });
     });
 
     // Intersection Observer for animations
     const observerOptions = {
       threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
+      rootMargin: '0px 0px -100px 0px'
     };
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('animate');
-          const delay = entry.target.dataset.delay || 0;
-          setTimeout(() => {
-            entry.target.style.transitionDelay = delay + 'ms';
-          }, 100);
         }
       });
     }, observerOptions);
 
     // Observe all animatable elements
-    document.querySelectorAll('.section-title, .section-subtitle, .feature-card, .stat-item, .step-card, .benefit-item').forEach(el => {
+    document.querySelectorAll('.section-title, .section-subtitle, .feature-card, .stat-item, .step-card, .benefit-item, .feature-detail-card, .overview-card').forEach(el => {
       observer.observe(el);
     });
 
@@ -807,12 +1227,48 @@
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
+          const offsetTop = target.offsetTop - 80;
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
           });
         }
       });
+    });
+
+    // Counter animation for stats
+    function animateCounter(element) {
+      const target = parseInt(element.getAttribute('data-count')) || parseInt(element.textContent) || 0;
+      const duration = 2000;
+      const increment = target / (duration / 16);
+      let current = 0;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          element.textContent = target;
+          clearInterval(timer);
+        } else {
+          element.textContent = Math.floor(current);
+        }
+      }, 16);
+    }
+
+    // Observe stat numbers and animate them
+    const statObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const statNumber = entry.target.querySelector('.stat-number');
+          if (statNumber && !statNumber.classList.contains('animated')) {
+            statNumber.classList.add('animated');
+            animateCounter(statNumber);
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-item').forEach(item => {
+      statObserver.observe(item);
     });
   </script>
 </body>

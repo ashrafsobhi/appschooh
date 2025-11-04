@@ -138,3 +138,10 @@ SESSION_SAVE_EVERY_REQUEST = True  # تحديث الجلسة في كل طلب
 # Google Gemini AI Settings
 GEMINI_API_KEY = 'AIzaSyA0UUDnvq87FxQ7QbrxaY4eZdkDInNkbkk'
 
+# ElevenLabs Text-to-Speech Settings
+# للحصول على API Key: https://elevenlabs.io/
+# للحصول على Voice ID: https://elevenlabs.io/app/voices
+ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', 'sk_44f7a072e659e0e22d56c51bc75190ce20a854949fe17422')
+ELEVENLABS_VOICE_ID = os.environ.get('ELEVENLABS_VOICE_ID', 'LXrTqFIgiubkrMkwvOUr')
+USE_ELEVENLABS = True  # تفعيل ElevenLabs
+

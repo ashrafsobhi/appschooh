@@ -1301,8 +1301,43 @@ def admin_create_user(request):
 
 def landing(request):
     """صفحة تعريفية احترافية للموقع"""
+    from django.db.models import Count, Q
+    
     site = SiteSettings.get_settings()
-    return render(request, 'student_affairs/landing.html', {'site': site})
+    
+    # إحصائيات حقيقية للنظام
+    total_students = Student.objects.count()
+    total_classrooms = Classroom.objects.count()
+    active_students = Student.objects.filter(registration_status='ناجح ومنقول').count()
+    failed_students = Student.objects.filter(registration_status='راسب وباق للإعادة').count()
+    male_students = Student.objects.filter(gender='male').count()
+    female_students = Student.objects.filter(gender='female').count()
+    
+    # إحصائيات الصفوف
+    grade1_count = Student.objects.filter(
+        Q(grade__icontains='1') | Q(grade__icontains='الأول') | Q(grade__icontains='اول')
+    ).count()
+    grade2_count = Student.objects.filter(
+        Q(grade__icontains='2') | Q(grade__icontains='الثاني') | Q(grade__icontains='ثاني')
+    ).count()
+    grade3_count = Student.objects.filter(
+        Q(grade__icontains='3') | Q(grade__icontains='الثالث') | Q(grade__icontains='ثالث')
+    ).count()
+    
+    context = {
+        'site': site,
+        'total_students': total_students,
+        'total_classrooms': total_classrooms,
+        'active_students': active_students,
+        'failed_students': failed_students,
+        'male_students': male_students,
+        'female_students': female_students,
+        'grade1_count': grade1_count,
+        'grade2_count': grade2_count,
+        'grade3_count': grade3_count,
+    }
+    
+    return render(request, 'student_affairs/landing.html', context)
 
 
 @require_http_methods(["GET", "POST"])
@@ -1441,6 +1476,208 @@ def chatbot_api(request):
             return JsonResponse({
                 'success': False,
                 'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@login_required
+def text_to_speech_api(request):
+    """
+    API endpoint لتحويل النص إلى صوت باستخدام Gemini API TTS
+    """
+    if request.method == 'POST':
+        import json
+        import requests
+        import base64
+        import io
+        from django.conf import settings
+        
+        try:
+            data = json.loads(request.body)
+            text = data.get('text', '')
+            
+            if not text:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'لا يوجد نص للتحويل'
+                }, status=400)
+            
+            # التحقق من وجود Gemini API Key
+            gemini_api_key = getattr(settings, 'GEMINI_API_KEY', '')
+            if not gemini_api_key:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Gemini API Key غير موجود',
+                    'use_fallback': True
+                }, status=400)
+            
+            # تنظيف النص
+            import re
+            clean_text = re.sub(r'<[^>]*>', '', text)  # إزالة HTML tags
+            clean_text = clean_text.replace('&nbsp;', ' ')  # استبدال &nbsp;
+            clean_text = re.sub(r'&[^;]+;', ' ', clean_text)  # إزالة HTML entities
+            clean_text = clean_text.strip()
+            
+            if not clean_text:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'النص فارغ بعد التنظيف',
+                    'use_fallback': True
+                }, status=400)
+            
+            # تقسيم النص الطويل إلى أجزاء (Gemini TTS له حد أقصى ~32k tokens)
+            # تقريباً 500 كلمة = جزء واحد
+            max_chars_per_request = 3000  # حرف لكل طلب
+            text_chunks = []
+            
+            if len(clean_text) > max_chars_per_request:
+                # تقسيم النص إلى جمل
+                sentences = re.split(r'([.!?]+\s*)', clean_text)
+                current_chunk = ''
+                
+                for sentence in sentences:
+                    if len(current_chunk) + len(sentence) <= max_chars_per_request:
+                        current_chunk += sentence
+                    else:
+                        if current_chunk:
+                            text_chunks.append(current_chunk.strip())
+                        current_chunk = sentence
+                
+                if current_chunk:
+                    text_chunks.append(current_chunk.strip())
+            else:
+                text_chunks = [clean_text]
+            
+            # إذا كان النص طويل جداً، استخدم Web Speech API مباشرة
+            if len(text_chunks) > 3:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'النص طويل جداً، استخدم Web Speech API',
+                    'use_fallback': True
+                }, status=400)
+            
+            # طلب Gemini API TTS
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent"
+            
+            headers = {
+                "Content-Type": "application/json",
+                "x-goog-api-key": gemini_api_key
+            }
+            
+            # استخدام أول جزء فقط (أو النص الكامل إذا كان قصيراً)
+            text_to_speak = text_chunks[0] if text_chunks else clean_text
+            
+            payload = {
+                "contents": [{
+                    "parts": [{
+                        "text": text_to_speak
+                    }]
+                }],
+                "generationConfig": {
+                    "responseModalities": ["AUDIO"],
+                    "speechConfig": {
+                        "voiceConfig": {
+                            "prebuiltVoiceConfig": {
+                                "voiceName": "Kore"  # صوت يدعم العربية
+                            }
+                        }
+                    }
+                }
+            }
+            
+            # زيادة timeout للنصوص الطويلة (حتى 90 ثانية)
+            text_length = len(text_to_speak)
+            timeout_seconds = min(90, max(40, text_length // 30))  # 40-90 ثانية حسب طول النص
+            
+            response = requests.post(url, json=payload, headers=headers, timeout=timeout_seconds)
+            
+            if response.status_code == 200:
+                try:
+                    result = response.json()
+                    
+                    # استخراج البيانات الصوتية
+                    if 'candidates' in result and len(result['candidates']) > 0:
+                        candidate = result['candidates'][0]
+                        if 'content' in candidate and 'parts' in candidate['content']:
+                            if len(candidate['content']['parts']) > 0:
+                                part = candidate['content']['parts'][0]
+                                if 'inlineData' in part and 'data' in part['inlineData']:
+                                    # البيانات الصوتية تأتي كـ PCM (base64)
+                                    pcm_base64 = part['inlineData']['data']
+                                    
+                                    # تحويل PCM إلى WAV
+                                    try:
+                                        # قراءة PCM من base64
+                                        pcm_data = base64.b64decode(pcm_base64)
+                                        
+                                        # تحويل PCM إلى WAV باستخدام wave module
+                                        import wave
+                                        import struct
+                                        
+                                        # إنشاء WAV buffer
+                                        wav_buffer = io.BytesIO()
+                                        with wave.open(wav_buffer, 'wb') as wav_file:
+                                            wav_file.setnchannels(1)  # Mono
+                                            wav_file.setsampwidth(2)  # 16-bit
+                                            wav_file.setframerate(24000)  # 24kHz
+                                            wav_file.writeframes(pcm_data)
+                                        
+                                        wav_data = wav_buffer.getvalue()
+                                        wav_base64 = base64.b64encode(wav_data).decode('utf-8')
+                                        
+                                        return JsonResponse({
+                                            'success': True,
+                                            'audio': f'data:audio/wav;base64,{wav_base64}',
+                                            'format': 'audio/wav'
+                                        })
+                                    except Exception as e:
+                                        # إذا فشل التحويل، أرسل PCM مباشرة
+                                        return JsonResponse({
+                                            'success': True,
+                                            'audio': f'data:audio/pcm;base64,{pcm_base64}',
+                                            'format': 'audio/pcm',
+                                            'note': 'PCM format - may need conversion'
+                                        })
+                    
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'لم يتم العثور على بيانات صوتية في الاستجابة',
+                        'use_fallback': True
+                    }, status=500)
+                    
+                except json.JSONDecodeError:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'خطأ في تحليل استجابة Gemini API',
+                        'use_fallback': True
+                    }, status=500)
+            else:
+                error_details = 'Unknown error'
+                try:
+                    error_json = response.json()
+                    error_details = str(error_json)
+                except:
+                    error_details = response.text[:200] if response.text else 'Unknown error'
+                
+                return JsonResponse({
+                    'success': False,
+                    'error': f'خطأ من Gemini API: {response.status_code}',
+                    'details': error_details,
+                    'use_fallback': True
+                }, status=response.status_code)
+            
+        except requests.exceptions.Timeout:
+            return JsonResponse({
+                'success': False,
+                'error': 'انتهت مهلة الاتصال بخدمة Gemini API',
+                'use_fallback': True
+            }, status=504)
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e),
+                'use_fallback': True
             }, status=500)
     
     return JsonResponse({'error': 'Method not allowed'}, status=405)

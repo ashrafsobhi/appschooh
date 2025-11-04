@@ -200,15 +200,15 @@
                     <script>
                         function initG1Stats(){
                             if(window.__statsInit && window.__statsInit.g1) return;
-                            createDoughnut('g1-gender', {{ g1_gender.labels|safe }}, {{ g1_gender.data|safe }}, ['#4e73df','#e83e8c'], 'نسبة النوع');
-                            createDoughnut('g1-foreign', {{ g1_foreign.labels|safe }}, {{ g1_foreign.data|safe }}, ['#1cc88a','#e74a3b'], 'محلي/وافد');
-                            createDoughnut('g1-withdrawn', {{ g1_withdrawn.labels|safe }}, {{ g1_withdrawn.data|safe }}, ['#f6c23e','#858796'], 'السحب');
-                            createBar('g1-sections', {{ g1_sections.labels|safe }}, {{ g1_sections.data|safe }}, 'الشُعب');
-                            createBar('g1-regtype', {{ g1_reg_type.labels|safe }}, {{ g1_reg_type.data|safe }}, 'نوع القيد');
-                            createBar('g1-status', {{ g1_status.labels|safe }}, {{ g1_status.data|safe }}, 'حالة القيد');
-                            createBar('g1-inclusion', {{ g1_inclusion.labels|safe }}, {{ g1_inclusion.data|safe }}, 'موقف الدمج');
-                            createBar('g1-lang1', {{ g1_lang1.labels|safe }}, {{ g1_lang1.data|safe }}, 'اللغة الأجنبية الأولى');
-                            createBar('g1-lang2', {{ g1_lang2.labels|safe }}, {{ g1_lang2.data|safe }}, 'اللغة الأجنبية الثانية');
+                            createDoughnut('g1-gender', {{ g1_gender.gender.labels_json|safe }}, {{ g1_gender.gender.data_json|safe }}, ['#4e73df','#e83e8c'], 'نسبة النوع');
+                            createDoughnut('g1-foreign', {{ g1_gender.foreign.labels_json|safe }}, {{ g1_gender.foreign.data_json|safe }}, ['#1cc88a','#e74a3b'], 'محلي/وافد');
+                            createDoughnut('g1-withdrawn', {{ g1_gender.withdrawn.labels_json|safe }}, {{ g1_gender.withdrawn.data_json|safe }}, ['#f6c23e','#858796'], 'السحب');
+                            createBar('g1-sections', {{ g1_gender.sections.labels_json|safe }}, {{ g1_gender.sections.data_json|safe }}, 'الشُعب');
+                            createBar('g1-regtype', {{ g1_gender.regtype.labels_json|safe }}, {{ g1_gender.regtype.data_json|safe }}, 'نوع القيد');
+                            createBar('g1-status', {{ g1_gender.status.labels_json|safe }}, {{ g1_gender.status.data_json|safe }}, 'حالة القيد');
+                            createBar('g1-inclusion', {{ g1_gender.inclusion.labels_json|safe }}, {{ g1_gender.inclusion.data_json|safe }}, 'موقف الدمج');
+                            createBar('g1-lang1', {{ g1_gender.lang1.labels_json|safe }}, {{ g1_gender.lang1.data_json|safe }}, 'اللغة الأجنبية الأولى');
+                            createBar('g1-lang2', {{ g1_gender.lang2.labels_json|safe }}, {{ g1_gender.lang2.data_json|safe }}, 'اللغة الأجنبية الثانية');
                             window.__statsInit = window.__statsInit || {}; window.__statsInit.g1 = true;
                         }
                     </script>
@@ -421,15 +421,15 @@
                     <script>
                         function initG2Stats(){
                             if(window.__statsInit && window.__statsInit.g2) return;
-                            createDoughnut('g2-gender', {{ g2_gender.labels|safe }}, {{ g2_gender.data|safe }}, ['#4e73df','#e83e8c'], 'نسبة النوع');
-                            createDoughnut('g2-foreign', {{ g2_foreign.labels|safe }}, {{ g2_foreign.data|safe }}, ['#1cc88a','#e74a3b'], 'محلي/وافد');
-                            createDoughnut('g2-withdrawn', {{ g2_withdrawn.labels|safe }}, {{ g2_withdrawn.data|safe }}, ['#f6c23e','#858796'], 'السحب');
-                            createBar('g2-sections', {{ g2_sections.labels|safe }}, {{ g2_sections.data|safe }}, 'الشُعب');
-                            createBar('g2-regtype', {{ g2_reg_type.labels|safe }}, {{ g2_reg_type.data|safe }}, 'نوع القيد');
-                            createBar('g2-status', {{ g2_status.labels|safe }}, {{ g2_status.data|safe }}, 'حالة القيد');
-                            createBar('g2-inclusion', {{ g2_inclusion.labels|safe }}, {{ g2_inclusion.data|safe }}, 'موقف الدمج');
-                            createBar('g2-lang1', {{ g2_lang1.labels|safe }}, {{ g2_lang1.data|safe }}, 'اللغة الأجنبية الأولى');
-                            createBar('g2-lang2', {{ g2_lang2.labels|safe }}, {{ g2_lang2.data|safe }}, 'اللغة الأجنبية الثانية');
+                            createDoughnut('g2-gender', {{ g2_gender.gender.labels_json|safe }}, {{ g2_gender.gender.data_json|safe }}, ['#4e73df','#e83e8c'], 'نسبة النوع');
+                            createDoughnut('g2-foreign', {{ g2_gender.foreign.labels_json|safe }}, {{ g2_gender.foreign.data_json|safe }}, ['#1cc88a','#e74a3b'], 'محلي/وافد');
+                            createDoughnut('g2-withdrawn', {{ g2_gender.withdrawn.labels_json|safe }}, {{ g2_gender.withdrawn.data_json|safe }}, ['#f6c23e','#858796'], 'السحب');
+                            createBar('g2-sections', {{ g2_gender.sections.labels_json|safe }}, {{ g2_gender.sections.data_json|safe }}, 'الشُعب');
+                            createBar('g2-regtype', {{ g2_gender.regtype.labels_json|safe }}, {{ g2_gender.regtype.data_json|safe }}, 'نوع القيد');
+                            createBar('g2-status', {{ g2_gender.status.labels_json|safe }}, {{ g2_gender.status.data_json|safe }}, 'حالة القيد');
+                            createBar('g2-inclusion', {{ g2_gender.inclusion.labels_json|safe }}, {{ g2_gender.inclusion.data_json|safe }}, 'موقف الدمج');
+                            createBar('g2-lang1', {{ g2_gender.lang1.labels_json|safe }}, {{ g2_gender.lang1.data_json|safe }}, 'اللغة الأجنبية الأولى');
+                            createBar('g2-lang2', {{ g2_gender.lang2.labels_json|safe }}, {{ g2_gender.lang2.data_json|safe }}, 'اللغة الأجنبية الثانية');
                             window.__statsInit = window.__statsInit || {}; window.__statsInit.g2 = true;
                         }
                     </script>
@@ -555,15 +555,15 @@
                     <script>
                         function initG3Stats(){
                             if(window.__statsInit && window.__statsInit.g3) return;
-                            createDoughnut('g3-gender', {{ g3_gender.labels|safe }}, {{ g3_gender.data|safe }}, ['#4e73df','#e83e8c'], 'نسبة النوع');
-                            createDoughnut('g3-foreign', {{ g3_foreign.labels|safe }}, {{ g3_foreign.data|safe }}, ['#1cc88a','#e74a3b'], 'محلي/وافد');
-                            createDoughnut('g3-withdrawn', {{ g3_withdrawn.labels|safe }}, {{ g3_withdrawn.data|safe }}, ['#f6c23e','#858796'], 'السحب');
-                            createBar('g3-sections', {{ g3_sections.labels|safe }}, {{ g3_sections.data|safe }}, 'الشُعب');
-                            createBar('g3-regtype', {{ g3_reg_type.labels|safe }}, {{ g3_reg_type.data|safe }}, 'نوع القيد');
-                            createBar('g3-status', {{ g3_status.labels|safe }}, {{ g3_status.data|safe }}, 'حالة القيد');
-                            createBar('g3-inclusion', {{ g3_inclusion.labels|safe }}, {{ g3_inclusion.data|safe }}, 'موقف الدمج');
-                            createBar('g3-lang1', {{ g3_lang1.labels|safe }}, {{ g3_lang1.data|safe }}, 'اللغة الأجنبية الأولى');
-                            createBar('g3-lang2', {{ g3_lang2.labels|safe }}, {{ g3_lang2.data|safe }}, 'اللغة الأجنبية الثانية');
+                            createDoughnut('g3-gender', {{ g3_gender.gender.labels_json|safe }}, {{ g3_gender.gender.data_json|safe }}, ['#4e73df','#e83e8c'], 'نسبة النوع');
+                            createDoughnut('g3-foreign', {{ g3_gender.foreign.labels_json|safe }}, {{ g3_gender.foreign.data_json|safe }}, ['#1cc88a','#e74a3b'], 'محلي/وافد');
+                            createDoughnut('g3-withdrawn', {{ g3_gender.withdrawn.labels_json|safe }}, {{ g3_gender.withdrawn.data_json|safe }}, ['#f6c23e','#858796'], 'السحب');
+                            createBar('g3-sections', {{ g3_gender.sections.labels_json|safe }}, {{ g3_gender.sections.data_json|safe }}, 'الشُعب');
+                            createBar('g3-regtype', {{ g3_gender.regtype.labels_json|safe }}, {{ g3_gender.regtype.data_json|safe }}, 'نوع القيد');
+                            createBar('g3-status', {{ g3_gender.status.labels_json|safe }}, {{ g3_gender.status.data_json|safe }}, 'حالة القيد');
+                            createBar('g3-inclusion', {{ g3_gender.inclusion.labels_json|safe }}, {{ g3_gender.inclusion.data_json|safe }}, 'موقف الدمج');
+                            createBar('g3-lang1', {{ g3_gender.lang1.labels_json|safe }}, {{ g3_gender.lang1.data_json|safe }}, 'اللغة الأجنبية الأولى');
+                            createBar('g3-lang2', {{ g3_gender.lang2.labels_json|safe }}, {{ g3_gender.lang2.data_json|safe }}, 'اللغة الأجنبية الثانية');
                             window.__statsInit = window.__statsInit || {}; window.__statsInit.g3 = true;
                         }
                     </script>

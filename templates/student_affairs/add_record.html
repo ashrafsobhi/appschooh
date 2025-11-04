@@ -46,7 +46,8 @@
             <h5 class="mb-0"><i class="fas fa-user-check"></i> اختيار طالب</h5>
         </div>
         <div class="card-body" style="padding: 24px;">
-            <form method="get" class="row g-3 align-items-end">
+            <form method="post" class="row g-3 align-items-end">
+                {% csrf_token %}
                 <div class="col-md-8">
                     {% if select_form %}
                         <label class="form-label">{{ select_form.student.label }}</label>
@@ -54,7 +55,7 @@
                     {% endif %}
                 </div>
                 <div class="col-md-2">
-                    <button class="btn btn-primary w-100"><i class="fas fa-check"></i> اختيار</button>
+                    <button type="submit" name="select_student" class="btn btn-primary w-100"><i class="fas fa-check"></i> اختيار</button>
                 </div>
                 <div class="col-md-2">
                     <a href="{% url 'student_affairs:add_student' %}?next=add_record" class="btn btn-outline-secondary w-100"><i class="fas fa-user-plus"></i> طالب جديد</a>
@@ -96,6 +97,7 @@
     </div>
 
     <!-- نموذج السجل -->
+    {% if form %}
     <div class="card mb-4" style="border: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
         <div class="card-header-gradient">
             <h5 class="mb-0"><i class="fas fa-file-signature"></i> تفاصيل سجل الطالب</h5>
@@ -104,6 +106,7 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="hidden" name="selected_student" value="{{ selected_student.id }}">
+                <input type="hidden" name="save_record" value="1">
 
                 <div class="info-badge mb-3"><i class="fas fa-info-circle"></i> الرجاء مراجعة بيانات السجل قبل الحفظ</div>
 
@@ -283,12 +286,17 @@
                 </div>
 
                 <div class="text-start mt-3">
-                    <button class="btn btn-primary"><i class="fas fa-save"></i> حفظ السجل</button>
+                    <button type="submit" name="save_record" class="btn btn-primary"><i class="fas fa-save"></i> حفظ السجل</button>
                     <a href="{% url 'student_affairs:records_list' %}" class="btn btn-outline-secondary"><i class="fas fa-times"></i> إلغاء</a>
                 </div>
             </form>
         </div>
     </div>
+    {% else %}
+    <div class="alert alert-info mt-3">
+        <i class="fas fa-info-circle"></i> يرجى اختيار طالب أولاً لعرض نموذج السجل.
+    </div>
+    {% endif %}
     {% endif %}
 </div>
 

@@ -71,7 +71,8 @@
                             <form method="post" class="mt-2">
                                 {% csrf_token %}
                                 <input type="hidden" name="student_id" value="{{ seat.student.id }}" />
-                                <button class="btn btn-sm btn-light text-danger w-100"><i class="fas fa-times"></i> إزالة</button>
+                                <input type="hidden" name="remove_student" value="1" />
+                                <button type="submit" class="btn btn-sm btn-light text-danger w-100"><i class="fas fa-times"></i> إزالة</button>
                             </form>
                         </div>
                         {% else %}

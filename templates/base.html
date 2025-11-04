@@ -269,8 +269,8 @@
         /* Chatbot Widget Styles */
         .chatbot-widget {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            bottom: 30px;
+            left: 30px;
             width: 380px;
             max-height: 600px;
             background: #fff;
@@ -279,17 +279,61 @@
             z-index: 999;
             display: flex;
             flex-direction: column;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             border: 1px solid rgba(102, 126, 234, 0.2);
         }
         
         .chatbot-widget.collapsed {
-            height: 60px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            bottom: 30px;
+            left: 30px;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
         
         .chatbot-widget.collapsed .chatbot-body {
             display: none;
+        }
+        
+        .chatbot-widget.collapsed .chatbot-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            padding: 0;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .chatbot-widget.collapsed .chatbot-header:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5);
+        }
+        
+        .chatbot-widget.collapsed .chatbot-header-content span,
+        .chatbot-widget.collapsed .chatbot-header-content .chatbot-status,
+        .chatbot-widget.collapsed .chatbot-toggle-btn {
+            display: none;
+        }
+        
+        .chatbot-widget.collapsed .chatbot-header-content i {
+            font-size: 32px;
+            animation: pulse 2s ease-in-out infinite;
         }
         
         .chatbot-header {
@@ -301,6 +345,7 @@
             justify-content: space-between;
             cursor: pointer;
             user-select: none;
+            border-radius: 20px 20px 0 0;
         }
         
         .chatbot-header-content {
@@ -484,6 +529,68 @@
             transform: scale(1.1);
         }
         
+        .chatbot-action-btn.recording {
+            background: #ef4444;
+            color: #fff;
+            animation: pulse-recording 1.5s ease-in-out infinite;
+        }
+        
+        .chatbot-action-btn.active {
+            background: #10b981;
+            color: #fff;
+        }
+        
+        @keyframes pulse-recording {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+            }
+        }
+        
+        .voice-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 8px;
+            animation: slideDown 0.3s ease-out;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .voice-status i {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .chatbot-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .chatbot-input::placeholder {
+            color: #94a3b8;
+            transition: color 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .chatbot-input-wrapper {
             display: flex;
             gap: 8px;
@@ -573,6 +680,23 @@
                 width: calc(100% - 40px);
                 left: 20px;
                 right: 20px;
+                bottom: 20px;
+            }
+            
+            .chatbot-widget.collapsed {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                left: 20px;
+            }
+            
+            .chatbot-widget.collapsed .chatbot-header {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .chatbot-widget.collapsed .chatbot-header-content i {
+                font-size: 28px;
             }
         }
         
@@ -832,7 +956,13 @@
                     </a>
                 </div>
                 <div class="sidebar-menu-item">
-                    <a href="{% url 'logout' %}" onclick="return confirm('هل أنت متأكد من تسجيل الخروج؟');">
+                    <a href="{% url 'student_affairs:profile' %}">
+                        <i class="fas fa-user-circle"></i>
+                        <span>الملف الشخصي</span>
+                    </a>
+                </div>
+                <div class="sidebar-menu-item">
+                    <a href="#" onclick="event.preventDefault(); showLogoutModal();">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>تسجيل الخروج</span>
                     </a>
@@ -908,18 +1038,28 @@
                     <button class="chatbot-action-btn" onclick="captureScreen()" title="التقاط لقطة شاشة">
                         <i class="fas fa-camera"></i>
                     </button>
+                    <button class="chatbot-action-btn" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="التحدث (اضغط للاستماع)">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="chatbot-action-btn" id="voiceSpeakBtn" onclick="toggleVoiceOutput()" title="التحدث بالردود صوتياً">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
                 </div>
                 <div class="chatbot-input-wrapper">
                     <input type="text" 
                            id="chatbotInput" 
                            class="chatbot-input" 
-                           placeholder="اكتب رسالتك هنا..."
+                           placeholder="اكتب رسالتك هنا أو اضغط على الميكروفون للتحدث..."
                            onkeypress="handleChatbotKeyPress(event)">
                     <button class="chatbot-send-btn" onclick="sendChatbotMessage()">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
                 <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <div id="voiceStatus" class="voice-status" style="display: none;">
+                    <i class="fas fa-microphone"></i>
+                    <span id="voiceStatusText">جاري الاستماع...</span>
+                </div>
             </div>
         </div>
     </div>
@@ -994,30 +1134,53 @@
     <script>
         let conversationHistory = [];
         let currentImageData = null;
-        
-        function openChatbot() {
-            const widget = document.getElementById('chatbotWidget');
-            if (widget) {
-                widget.classList.remove('collapsed');
-                setTimeout(() => {
-                    document.getElementById('chatbotInput').focus();
-                }, 300);
-            }
-        }
+        let voiceRecordingActive = false;
+        let voiceOutputEnabled = localStorage.getItem('voiceOutputEnabled') === 'true';
+        let recognition = null;
+        let speechSynthesis = window.speechSynthesis;
         
         function toggleChatbot() {
             const widget = document.getElementById('chatbotWidget');
             const icon = document.getElementById('chatbotToggleIcon');
+            const headerContent = widget?.querySelector('.chatbot-header-content');
+            const spans = headerContent?.querySelectorAll('span');
+            const status = headerContent?.querySelector('.chatbot-status');
+            const toggleBtn = widget?.querySelector('.chatbot-toggle-btn');
+            
             if (widget) {
                 widget.classList.toggle('collapsed');
+                
                 if (widget.classList.contains('collapsed')) {
-                    icon.style.transform = 'rotate(180deg)';
+                    // إخفاء النصوص عند التصغير إلى دائرة
+                    if (spans) spans.forEach(s => s.style.display = 'none');
+                    if (status) status.style.display = 'none';
+                    if (toggleBtn) toggleBtn.style.display = 'none';
+                    if (icon) {
+                        icon.style.transform = 'rotate(180deg)';
+                        icon.style.display = 'none';
+                    }
                 } else {
-                    icon.style.transform = 'rotate(0deg)';
+                    // إظهار النصوص عند التكبير
+                    if (spans) spans.forEach(s => s.style.display = 'inline');
+                    if (status) status.style.display = 'flex';
+                    if (toggleBtn) toggleBtn.style.display = 'flex';
+                    if (icon) {
+                        icon.style.transform = 'rotate(0deg)';
+                        icon.style.display = 'block';
+                    }
+                    // التركيز على حقل الإدخال
                     setTimeout(() => {
-                        document.getElementById('chatbotInput').focus();
+                        const input = document.getElementById('chatbotInput');
+                        if (input) input.focus();
                     }, 300);
                 }
+            }
+        }
+        
+        function openChatbot() {
+            const widget = document.getElementById('chatbotWidget');
+            if (widget && widget.classList.contains('collapsed')) {
+                toggleChatbot();
             }
         }
         
@@ -1068,6 +1231,10 @@
                     // الحد من حجم التاريخ
                     if (conversationHistory.length > 10) {
                         conversationHistory = conversationHistory.slice(-10);
+                    }
+                    // التحدث بالرد إذا كان الصوت مفعلاً
+                    if (voiceOutputEnabled) {
+                        speakText(data.response);
                     }
                 } else {
                     addMessage('عذراً، حدث خطأ. يرجى المحاولة مرة أخرى. ' + (data.error || ''), 'bot');
@@ -1206,14 +1373,693 @@
             return cookieValue;
         }
         
-        // تهيئة الشات بوت - إخفاؤه بشكل افتراضي
+        // تهيئة الشات بوت - دائرة عائمة بشكل افتراضي
         document.addEventListener('DOMContentLoaded', function() {
             const widget = document.getElementById('chatbotWidget');
             if (widget) {
                 widget.classList.add('collapsed');
+                // إخفاء العناصر عند التحميل
+                setTimeout(() => {
+                    const headerContent = widget.querySelector('.chatbot-header-content');
+                    if (headerContent) {
+                        const spans = headerContent.querySelectorAll('span');
+                        const status = headerContent.querySelector('.chatbot-status');
+                        const toggleBtn = widget.querySelector('.chatbot-toggle-btn');
+                        if (spans) spans.forEach(s => s.style.display = 'none');
+                        if (status) status.style.display = 'none';
+                        if (toggleBtn) toggleBtn.style.display = 'none';
+                    }
+                }, 100);
+            }
+        });
+        
+        // عرض modal تسجيل الخروج
+        function showLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            if (modal) {
+                const bsModal = new bootstrap.Modal(modal);
+                bsModal.show();
+            }
+        }
+        
+        // تأكيد تسجيل الخروج
+        function confirmLogout() {
+            window.location.href = "{% url 'logout' %}";
+        }
+        
+        // ===== وظائف الصوت =====
+        
+        // تهيئة Speech Recognition - الوقت الفعلي
+        function initSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.warn('Speech Recognition غير مدعوم في هذا المتصفح');
+                return null;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            
+            recognition.lang = 'ar-SA'; // العربية السعودية
+            recognition.continuous = true; // الاستماع المستمر
+            recognition.interimResults = true; // عرض النتائج المؤقتة أثناء التحدث
+            
+            let finalTranscript = '';
+            let silenceTimer = null;
+            const SILENCE_TIMEOUT = 2000; // 2 ثانية صمت = انتهاء الكلام
+            
+            recognition.onstart = function() {
+                voiceRecordingActive = true;
+                finalTranscript = '';
+                updateVoiceButton(true);
+                showVoiceStatus('🎤 جاري الاستماع... تحدث الآن');
+                const input = document.getElementById('chatbotInput');
+                if (input) {
+                    input.value = '';
+                    input.placeholder = 'جاري الاستماع... تحدث الآن';
+                }
+            };
+            
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                let newFinalTranscript = '';
+                
+                // جمع النتائج المؤقتة والنهائية
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    
+                    if (event.results[i].isFinal) {
+                        newFinalTranscript += transcript + ' ';
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                const input = document.getElementById('chatbotInput');
+                if (input) {
+                    // عرض النص النهائي + المؤقت معاً
+                    input.value = finalTranscript.trim() + (interimTranscript ? ' ' + interimTranscript : '');
+                    
+                    // تحديث حالة الصوت بناءً على وجود نص
+                    if (finalTranscript.trim() || interimTranscript.trim()) {
+                        showVoiceStatus('🎤 جاري الاستماع... ' + (interimTranscript ? '←' : '✓'));
+                    } else {
+                        showVoiceStatus('🎤 جاري الاستماع... تحدث الآن');
+                    }
+                }
+                
+                // إذا كان هناك نص نهائي جديد، أعد ضبط مؤقت الصمت
+                if (newFinalTranscript.trim()) {
+                    // إعادة تعيين مؤقت الصمت
+                    if (silenceTimer) {
+                        clearTimeout(silenceTimer);
+                    }
+                    
+                    // إرسال تلقائي بعد فترة صمت
+                    silenceTimer = setTimeout(() => {
+                        if (finalTranscript.trim() && voiceRecordingActive) {
+                            // إرسال الرسالة تلقائياً
+                            const input = document.getElementById('chatbotInput');
+                            if (input && input.value.trim()) {
+                                hideVoiceStatus();
+                                recognition.stop(); // إيقاف التسجيل
+                                setTimeout(() => {
+                                    sendChatbotMessage();
+                                }, 300);
+                            }
+                        }
+                    }, SILENCE_TIMEOUT);
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('خطأ في التعرف على الصوت:', event.error);
+                
+                if (silenceTimer) {
+                    clearTimeout(silenceTimer);
+                }
+                
+                hideVoiceStatus();
+                
+                if (event.error === 'no-speech') {
+                    // إذا لم يكن هناك نص، لا نعرض رسالة خطأ
+                    const input = document.getElementById('chatbotInput');
+                    if (input && !input.value.trim()) {
+                        showVoiceStatus('🎤 لم يتم اكتشاف صوت. تحدث مرة أخرى...');
+                        setTimeout(() => {
+                            hideVoiceStatus();
+                        }, 2000);
+                    } else {
+                        // إذا كان هناك نص، أرسله
+                        recognition.stop();
+                        setTimeout(() => {
+                            sendChatbotMessage();
+                        }, 300);
+                    }
+                } else if (event.error === 'not-allowed') {
+                    alert('يرجى السماح بالوصول إلى الميكروفون في إعدادات المتصفح.');
+                    updateVoiceButton(false);
+                    voiceRecordingActive = false;
+                } else if (event.error === 'network') {
+                    showVoiceStatus('⚠️ خطأ في الاتصال. جاري إعادة المحاولة...');
+                } else {
+                    // لأخطاء أخرى، استمر في الاستماع
+                    console.warn('خطأ في التعرف:', event.error);
+                }
+            };
+            
+            recognition.onend = function() {
+                if (silenceTimer) {
+                    clearTimeout(silenceTimer);
+                }
+                
+                voiceRecordingActive = false;
+                updateVoiceButton(false);
+                
+                const input = document.getElementById('chatbotInput');
+                if (input) {
+                    input.placeholder = 'اكتب رسالتك هنا أو اضغط على الميكروفون للتحدث...';
+                }
+                
+                // إذا كان هناك نص ولم يتم إرساله، أرسله
+                if (input && input.value.trim() && !input.value.includes('...')) {
+                    setTimeout(() => {
+                        sendChatbotMessage();
+                    }, 300);
+                } else {
+                    hideVoiceStatus();
+                }
+            };
+            
+            return recognition;
+        }
+        
+        // تبديل تسجيل الصوت - الوقت الفعلي
+        function toggleVoiceRecording() {
+            if (!recognition) {
+                recognition = initSpeechRecognition();
+                if (!recognition) {
+                    alert('التعرف على الصوت غير مدعوم في متصفحك. يرجى استخدام متصفح Chrome أو Edge.');
+                    return;
+                }
+            }
+            
+            if (voiceRecordingActive) {
+                // إيقاف التسجيل
+                recognition.stop();
+            } else {
+                try {
+                    // بدء التسجيل في الوقت الفعلي
+                    recognition.start();
+                } catch (error) {
+                    console.error('خطأ في بدء التسجيل:', error);
+                    // إذا كان التسجيل يعمل بالفعل، لا نعرض خطأ
+                    if (error.message && !error.message.includes('already started')) {
+                        alert('حدث خطأ في بدء التسجيل. يرجى المحاولة مرة أخرى.');
+                    }
+                }
+            }
+        }
+        
+        // تحديث حالة زر الصوت
+        function updateVoiceButton(isRecording) {
+            const btn = document.getElementById('voiceRecordBtn');
+            if (btn) {
+                if (isRecording) {
+                    btn.classList.add('recording');
+                    btn.innerHTML = '<i class="fas fa-stop"></i>';
+                    btn.title = 'إيقاف التسجيل';
+                } else {
+                    btn.classList.remove('recording');
+                    btn.innerHTML = '<i class="fas fa-microphone"></i>';
+                    btn.title = 'التحدث (اضغط للاستماع)';
+                }
+            }
+        }
+        
+        // إظهار حالة الصوت
+        function showVoiceStatus(text) {
+            const statusDiv = document.getElementById('voiceStatus');
+            const statusText = document.getElementById('voiceStatusText');
+            if (statusDiv && statusText) {
+                statusText.textContent = text;
+                statusDiv.style.display = 'flex';
+            }
+        }
+        
+        // إخفاء حالة الصوت
+        function hideVoiceStatus() {
+            const statusDiv = document.getElementById('voiceStatus');
+            if (statusDiv) {
+                statusDiv.style.display = 'none';
+            }
+        }
+        
+        // تبديل التحدث بالردود
+        function toggleVoiceOutput() {
+            voiceOutputEnabled = !voiceOutputEnabled;
+            localStorage.setItem('voiceOutputEnabled', voiceOutputEnabled);
+            
+            const btn = document.getElementById('voiceSpeakBtn');
+            if (btn) {
+                if (voiceOutputEnabled) {
+                    btn.classList.add('active');
+                    btn.title = 'إيقاف التحدث بالردود';
+                    btn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                } else {
+                    btn.classList.remove('active');
+                    btn.title = 'التحدث بالردود صوتياً';
+                    btn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    // إيقاف أي صوت قيد التشغيل
+                    speechSynthesis.cancel();
+                }
+            }
+        }
+        
+        // تحسين النص للعامية والكلام الطبيعي
+        function improveTextForSpeech(text) {
+            // تنظيف النص من HTML وعلامات خاصة
+            let cleaned = text
+                .replace(/<[^>]*>/g, '') // إزالة HTML tags
+                .replace(/&nbsp;/g, ' ') // استبدال &nbsp;
+                .replace(/&[^;]+;/g, ' ') // إزالة HTML entities
+                .replace(/\n/g, '. ') // استبدال الأسطر بنقاط
+                .replace(/\s+/g, ' ') // تقليل المسافات المتعددة
+                .trim();
+            
+            // إزالة الرموز الخاصة والعلامات (إبقاء العربية والأرقام وعلامات الترقيم)
+            cleaned = cleaned.replace(/[^\u0600-\u06FF\u0750-\u077F\s.,!?0-9]/g, '');
+            
+            // تحسين بعض العبارات الشائعة للعامية المصرية والعربية
+            const replacements = {
+                'مرحبا': 'مرحبا',
+                'أهلا': 'أهلا',
+                'شكرا': 'شكرا',
+                'عفوا': 'عفوا',
+                'لو سمحت': 'لو سمحت',
+                'من فضلك': 'من فضلك',
+                'ممكن': 'ممكن',
+                'عايز': 'عايز',
+                'عاوز': 'عاوز',
+            };
+            
+            // تطبيق الاستبدالات
+            for (const [key, value] of Object.entries(replacements)) {
+                cleaned = cleaned.replace(new RegExp(key, 'gi'), value);
+            }
+            
+            // إضافة فواصل منطقية للجمل الطويلة (إضافة نقطة بعد كل 50 كلمة تقريباً)
+            const words = cleaned.split(' ');
+            if (words.length > 50) {
+                let result = [];
+                for (let i = 0; i < words.length; i += 50) {
+                    const chunk = words.slice(i, i + 50).join(' ');
+                    result.push(chunk);
+                }
+                cleaned = result.join('. ');
+            }
+            
+            // إزالة المسافات الزائدة حول علامات الترقيم
+            cleaned = cleaned.replace(/\s+([.,!?])/g, '$1');
+            cleaned = cleaned.replace(/([.,!?])\s*/g, '$1 ');
+            
+            return cleaned.trim();
+        }
+        
+        // الحصول على أفضل صوت عربي متاح
+        function getBestArabicVoice() {
+            const voices = speechSynthesis.getVoices();
+            
+            // قائمة بالأصوات المفضلة (من الأفضل للأقل)
+            const preferredVoices = [
+                'ar-SA', 'ar-AE', 'ar-EG', 'ar-QA', 'ar-KW', 'ar-BH', 'ar-OM', 'ar-YE', 'ar-IQ', 'ar-SY',
+                'ar-JO', 'ar-LB', 'ar-PS', 'ar-MA', 'ar-DZ', 'ar-TN', 'ar-LY', 'ar-SD', 'ar-SO', 'ar-MR'
+            ];
+            
+            // البحث عن صوت عربي محدد
+            for (const lang of preferredVoices) {
+                const voice = voices.find(v => v.lang === lang || v.lang.startsWith(lang.split('-')[0]));
+                if (voice) {
+                    return voice;
+                }
+            }
+            
+            // البحث عن أي صوت يحتوي على 'ar' في اللغة
+            const arabicVoice = voices.find(voice => 
+                voice.lang.startsWith('ar') || 
+                voice.lang.includes('Arabic')
+            );
+            
+            if (arabicVoice) {
+                return arabicVoice;
+            }
+            
+            // البحث عن صوت يحتوي على 'عربي' في الاسم
+            const arabicNamedVoice = voices.find(voice => 
+                voice.name.toLowerCase().includes('arabic') ||
+                voice.name.includes('عربي') ||
+                voice.name.includes('Arabic')
+            );
+            
+            return arabicNamedVoice || null;
+        }
+        
+        // التحدث بنص معين - محسّن للعامية والكلام الطبيعي
+        function speakText(text) {
+            if (!voiceOutputEnabled || !speechSynthesis) return;
+            
+            // إيقاف أي صوت قيد التشغيل
+            speechSynthesis.cancel();
+            
+            // تحسين النص
+            const cleanText = improveTextForSpeech(text);
+            
+            if (!cleanText || cleanText.length < 2) return;
+            
+            // تقسيم النص إلى جمل إذا كان طويلاً (لتحسين الجودة)
+            const sentences = cleanText.split(/([.!?]+\s*)/).filter(s => s.trim().length > 0);
+            
+            // دالة للتحدث بجملة واحدة
+            const speakSentence = (sentence, index = 0) => {
+                if (index >= sentences.length) return;
+                
+                const sentenceText = sentences[index].trim();
+                if (!sentenceText) {
+                    speakSentence('', index + 1);
+                    return;
+                }
+                
+                const utterance = new SpeechSynthesisUtterance(sentenceText);
+                
+                // الحصول على أفضل صوت عربي
+                const arabicVoice = getBestArabicVoice();
+                if (arabicVoice) {
+                    utterance.voice = arabicVoice;
+                    utterance.lang = arabicVoice.lang;
+                } else {
+                    utterance.lang = 'ar-SA';
+                }
+                
+                // إعدادات صوت طبيعية أكثر - محسّنة للعامية
+                utterance.rate = 0.92; // سرعة طبيعية (أبطأ قليلاً للوضوح)
+                utterance.pitch = 0.98; // نبرة طبيعية (أقل قليلاً ليكون أكثر طبيعية)
+                utterance.volume = 1.0; // مستوى الصوت
+                
+                // إضافة pause صغير بين الكلمات للعامية
+                utterance.text = sentenceText.replace(/\s+/g, ' ');
+                
+                utterance.onstart = function() {
+                    if (index === 0) {
+                        console.log('بدأ التحدث');
+                    }
+                };
+                
+                utterance.onerror = function(event) {
+                    console.error('خطأ في التحدث:', event.error);
+                    // المتابعة للجملة التالية حتى لو حدث خطأ
+                    if (index < sentences.length - 1) {
+                        setTimeout(() => speakSentence('', index + 1), 100);
+                    }
+                };
+                
+                utterance.onend = function() {
+                    // التحدث بالجملة التالية بعد انتهاء الحالية
+                    if (index < sentences.length - 1) {
+                        setTimeout(() => speakSentence('', index + 1), 150); // فاصل قصير بين الجمل
+                    } else {
+                        console.log('انتهى التحدث');
+                    }
+                };
+                
+                speechSynthesis.speak(utterance);
+            };
+            
+            // الحصول على الأصوات المتاحة أولاً
+            const voices = speechSynthesis.getVoices();
+            
+            if (voices.length === 0) {
+                // انتظار تحميل الأصوات
+                speechSynthesis.onvoiceschanged = function() {
+                    speakSentence('', 0);
+                };
+            } else {
+                speakSentence('', 0);
+            }
+        }
+        
+        // تهيئة حالة الأزرار عند التحميل
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحديث زر التحدث بالردود
+            const speakBtn = document.getElementById('voiceSpeakBtn');
+            if (speakBtn) {
+                if (voiceOutputEnabled) {
+                    speakBtn.classList.add('active');
+                    speakBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                } else {
+                    speakBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                }
+            }
+            
+            // تهيئة Speech Recognition إذا كان مدعوماً
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                recognition = initSpeechRecognition();
+            }
+            
+            // تحميل الأصوات المتاحة عند تحميل الصفحة
+            if (speechSynthesis) {
+                // محاولة تحميل الأصوات فوراً
+                const voices = speechSynthesis.getVoices();
+                if (voices.length === 0) {
+                    speechSynthesis.onvoiceschanged = function() {
+                        console.log('تم تحميل الأصوات المتاحة:', speechSynthesis.getVoices().length);
+                        const bestVoice = getBestArabicVoice();
+                        if (bestVoice) {
+                            console.log('أفضل صوت عربي متاح:', bestVoice.name, bestVoice.lang);
+                        } else {
+                            console.warn('لم يتم العثور على صوت عربي متاح');
+                        }
+                    };
+                } else {
+                    const bestVoice = getBestArabicVoice();
+                    if (bestVoice) {
+                        console.log('أفضل صوت عربي متاح:', bestVoice.name, bestVoice.lang);
+                    }
+                }
             }
         });
     </script>
+    {% endif %}
+    
+    <!-- Logout Confirmation Modal -->
+    {% if user.is_authenticated %}
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content logout-modal-content">
+                <div class="modal-body logout-modal-body">
+                    <div class="logout-icon-wrapper">
+                        <div class="logout-icon">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                    </div>
+                    <h4 class="logout-modal-title">تأكيد تسجيل الخروج</h4>
+                    <p class="logout-modal-message">
+                        هل أنت متأكد من رغبتك في تسجيل الخروج من النظام؟
+                    </p>
+                    <div class="logout-modal-actions">
+                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i>
+                            إلغاء
+                        </button>
+                        <button type="button" class="btn btn-confirm" onclick="confirmLogout()">
+                            <i class="fas fa-check"></i>
+                            تأكيد الخروج
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        /* Logout Modal Styles */
+        .logout-modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logout-modal-body {
+            padding: 40px 30px;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        .logout-icon-wrapper {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .logout-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .logout-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            opacity: 0.3;
+            animation: ripple 2s ease-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        .logout-icon i {
+            font-size: 40px;
+            color: white;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .logout-modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 15px;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        .logout-modal-message {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .logout-modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .logout-modal-actions .btn {
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .logout-modal-actions .btn i {
+            font-size: 18px;
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #495057;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-cancel:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-confirm {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn-confirm:hover {
+            background: linear-gradient(135deg, #ee5a6f 0%, #dc4c64 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.5);
+        }
+        
+        .btn-confirm:active,
+        .btn-cancel:active {
+            transform: translateY(0);
+        }
+        
+        /* Modal Backdrop */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 576px) {
+            .logout-modal-body {
+                padding: 30px 20px;
+            }
+            
+            .logout-icon {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .logout-icon i {
+                font-size: 32px;
+            }
+            
+            .logout-modal-title {
+                font-size: 20px;
+            }
+            
+            .logout-modal-message {
+                font-size: 14px;
+            }
+            
+            .logout-modal-actions {
+                flex-direction: column;
+            }
+            
+            .logout-modal-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
     {% endif %}
     
     {% block extra_js %}{% endblock %}

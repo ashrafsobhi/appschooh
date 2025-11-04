@@ -1,6 +1,6 @@
 from django import forms
 from django.db.models import Q
-from .models import Student, StudentAttachment, Classroom
+from .models import Student, StudentAttachment, Classroom, UserProfile
 from .utils import parse_egyptian_national_id
 from datetime import date
 from django.contrib.auth.models import User
@@ -358,4 +358,86 @@ class AdminCreateUserForm(forms.Form):
         self.generated_username = username
         self.generated_password = password
         return user
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    """نموذج تحديث الملف الشخصي"""
+    
+    class Meta:
+        model = UserProfile
+        fields = ['full_name', 'phone', 'profile_picture']
+        widgets = {
+            'full_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'الاسم الكامل'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'رقم الهاتف'
+            }),
+            'profile_picture': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
+        }
+
+
+class PasswordChangeForm(forms.Form):
+    """نموذج تغيير كلمة المرور"""
+    old_password = forms.CharField(
+        label='كلمة المرور الحالية',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'أدخل كلمة المرور الحالية',
+            'required': True
+        }),
+        required=True
+    )
+    new_password = forms.CharField(
+        label='كلمة المرور الجديدة',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'أدخل كلمة المرور الجديدة',
+            'required': True,
+            'minlength': 8
+        }),
+        required=True,
+        min_length=8
+    )
+    confirm_password = forms.CharField(
+        label='تأكيد كلمة المرور',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'أكد كلمة المرور الجديدة',
+            'required': True
+        }),
+        required=True
+    )
+    
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+    
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get('old_password')
+        if not self.user.check_password(old_password):
+            raise forms.ValidationError('كلمة المرور الحالية غير صحيحة.')
+        return old_password
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        confirm_password = cleaned_data.get('confirm_password')
+        
+        if new_password and confirm_password:
+            if new_password != confirm_password:
+                raise forms.ValidationError('كلمة المرور الجديدة وتأكيد كلمة المرور غير متطابقين.')
+        
+        return cleaned_data
+    
+    def save(self):
+        new_password = self.cleaned_data['new_password']
+        self.user.set_password(new_password)
+        self.user.save()
+        return self.user
 
